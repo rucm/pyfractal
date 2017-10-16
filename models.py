@@ -15,11 +15,8 @@ class JuliaData(QObject):
         self.size = size
         self.cx, self.cy = cx, cy
         self.loop = loop
-
         self.lower = -2.0 / self.size
         self.upper = 2.0 / self.size
-        x, y = [np.linspace(self.lower, self.upper, self.size)] * 2
-        self.x, self.y = np.meshgrid(x, y)
 
     def calcurate(self):
-        for i in range(self.loop):
+        pass
