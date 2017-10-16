@@ -41,5 +41,4 @@ class JuliaData(QObject):
             color = QColor()
             color.setHsvF(0.5, 1.0, n[i, j])
             image.setPixelColor(i, j, color)
-        image.save('fractal.png')
         self.graph.setPixmap(QPixmap.fromImage(image))
