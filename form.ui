@@ -38,6 +38,9 @@
       <property name="midLineWidth">
        <number>2</number>
       </property>
+      <property name="transformationAnchor">
+       <enum>QGraphicsView::NoAnchor</enum>
+      </property>
      </widget>
     </item>
     <item>

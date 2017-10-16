@@ -7,12 +7,12 @@ from PyQt5.QtCore import (
 from PyQt5.QtWidgets import (
     QWidget,
     QMainWindow,
-    QGraphicsView
-)
-from PyQt5.QtGui import (
-    QPainter
+    QGraphicsView,
+    QGraphicsScene
 )
 from PyQt5 import uic
+
+from models import JuliaData
 
 
 class View(QGraphicsView):
@@ -90,3 +90,10 @@ class MainWindow(QMainWindow):
         Ui = uic.loadUiType('form.ui')[0]
         self.ui = Ui()
         self.ui.setupUi(self)
+        self.scene = QGraphicsScene(self)
+        self.ui.view.setScene(self.scene)
+
+        self.julia_data = JuliaData()
+        self.julia_data.calcurate()
+        self.scene.addItem(self.julia_data.graph)
+        
