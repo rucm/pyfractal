@@ -69,21 +69,7 @@ color: rgb(255, 255, 255);</string>
       <property name="midLineWidth">
        <number>2</number>
       </property>
-      <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0,0,0,0" columnstretch="3,3,3,3,1,2">
-       <item row="6" column="2">
-        <widget class="QLabel" name="label_6">
-         <property name="text">
-          <string>Brightness</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_9">
-         <property name="text">
-          <string>Processing Time</string>
-         </property>
-        </widget>
-       </item>
+      <layout class="QGridLayout" name="gridLayout" columnstretch="2,3,2,3,1,2,3,3" rowminimumheight="0,0,0,0,0,0,0,0">
        <item row="4" column="3">
         <widget class="QDoubleSpinBox" name="s">
          <property name="styleSheet">
@@ -92,8 +78,14 @@ color: rgb(255, 255, 255);</string>
          <property name="frame">
           <bool>false</bool>
          </property>
+         <property name="decimals">
+          <number>10</number>
+         </property>
          <property name="maximum">
           <double>1.000000000000000</double>
+         </property>
+         <property name="singleStep">
+          <double>0.010000000000000</double>
          </property>
          <property name="value">
           <double>1.000000000000000</double>
@@ -118,8 +110,14 @@ color: rgb(255, 255, 255);</string>
          <property name="alignment">
           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
          </property>
+         <property name="decimals">
+          <number>10</number>
+         </property>
          <property name="maximum">
           <double>1.000000000000000</double>
+         </property>
+         <property name="singleStep">
+          <double>0.010000000000000</double>
          </property>
          <property name="value">
           <double>0.500000000000000</double>
@@ -143,7 +141,7 @@ color: rgb(255, 255, 255);</string>
          </property>
         </widget>
        </item>
-       <item row="3" column="5">
+       <item row="3" column="7">
         <widget class="QPushButton" name="run">
          <property name="styleSheet">
           <string notr="true">background-color: rgb(51, 51, 51);</string>
@@ -154,7 +152,7 @@ color: rgb(255, 255, 255);</string>
         </widget>
        </item>
        <item row="4" column="1">
-        <widget class="QDoubleSpinBox" name="c_y">
+        <widget class="QDoubleSpinBox" name="cy">
          <property name="styleSheet">
           <string notr="true">background-color: rgb(51, 51, 51);</string>
          </property>
@@ -180,7 +178,7 @@ color: rgb(255, 255, 255);</string>
         </widget>
        </item>
        <item row="3" column="1">
-        <widget class="QDoubleSpinBox" name="c_x">
+        <widget class="QDoubleSpinBox" name="cx">
          <property name="styleSheet">
           <string notr="true">background-color: rgb(51, 51, 51);</string>
          </property>
@@ -205,14 +203,93 @@ color: rgb(255, 255, 255);</string>
          </property>
         </widget>
        </item>
-       <item row="6" column="0">
-        <widget class="QLabel" name="label_7">
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_2">
          <property name="text">
-          <string>Loop Limit</string>
+          <string>Cy</string>
          </property>
         </widget>
        </item>
-       <item row="6" column="3">
+       <item row="4" column="7">
+        <widget class="QPushButton" name="save">
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(51, 51, 51);</string>
+         </property>
+         <property name="text">
+          <string>Save</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="2">
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>Value</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="label_8">
+         <property name="text">
+          <string>Center X</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="4">
+        <widget class="QCheckBox" name="use_v">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QDoubleSpinBox" name="x">
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(51, 51, 51);</string>
+         </property>
+         <property name="frame">
+          <bool>false</bool>
+         </property>
+         <property name="decimals">
+          <number>10</number>
+         </property>
+         <property name="minimum">
+          <double>-1.500000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>1.500000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="label_10">
+         <property name="text">
+          <string>Center Y</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <widget class="QDoubleSpinBox" name="y">
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(51, 51, 51);</string>
+         </property>
+         <property name="frame">
+          <bool>false</bool>
+         </property>
+         <property name="decimals">
+          <number>10</number>
+         </property>
+         <property name="minimum">
+          <double>-1.500000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>1.500000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="3">
         <widget class="QDoubleSpinBox" name="v">
          <property name="styleSheet">
           <string notr="true">background-color: rgb(51, 51, 51);</string>
@@ -220,12 +297,77 @@ color: rgb(255, 255, 255);</string>
          <property name="frame">
           <bool>false</bool>
          </property>
+         <property name="decimals">
+          <number>10</number>
+         </property>
          <property name="maximum">
+          <double>1.000000000000000</double>
+         </property>
+         <property name="singleStep">
+          <double>0.010000000000000</double>
+         </property>
+         <property name="value">
           <double>1.000000000000000</double>
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
+       <item row="6" column="5">
+        <widget class="QLabel" name="label_11">
+         <property name="text">
+          <string>Scale</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="6">
+        <widget class="QSpinBox" name="loop">
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(51, 51, 51);</string>
+         </property>
+         <property name="frame">
+          <bool>false</bool>
+         </property>
+         <property name="maximum">
+          <number>999999999</number>
+         </property>
+         <property name="value">
+          <number>256</number>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="5">
+        <widget class="QLabel" name="label_7">
+         <property name="text">
+          <string>Loop Limit</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="6">
+        <widget class="QSpinBox" name="size">
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(51, 51, 51);</string>
+         </property>
+         <property name="frame">
+          <bool>false</bool>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>999999999</number>
+         </property>
+         <property name="value">
+          <number>800</number>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="5">
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>Size</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="6">
         <widget class="QLabel" name="processing_time">
          <property name="styleSheet">
           <string notr="true">background-color: rgb(51, 51, 51);</string>
@@ -244,56 +386,32 @@ color: rgb(255, 255, 255);</string>
          </property>
         </widget>
        </item>
-       <item row="6" column="1">
-        <widget class="QSpinBox" name="loop_limit">
+       <item row="3" column="5">
+        <widget class="QLabel" name="label_9">
+         <property name="text">
+          <string>Processing Time</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="6">
+        <widget class="QDoubleSpinBox" name="scale">
          <property name="styleSheet">
           <string notr="true">background-color: rgb(51, 51, 51);</string>
          </property>
          <property name="frame">
           <bool>false</bool>
          </property>
+         <property name="decimals">
+          <number>0</number>
+         </property>
+         <property name="minimum">
+          <double>0.000000000000000</double>
+         </property>
          <property name="maximum">
-          <number>999999999</number>
+          <double>100000000000000007517448691651820862747142906435240821348290910235776592524241520466454110109775803542826595503885252632667750400.000000000000000</double>
          </property>
          <property name="value">
-          <number>256</number>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="label_2">
-         <property name="text">
-          <string>Cy</string>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="4">
-        <widget class="QCheckBox" name="use_v">
-         <property name="text">
-          <string/>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="4">
-        <widget class="QLabel" name="label_3">
-         <property name="text">
-          <string>use calc</string>
-         </property>
-         <property name="scaledContents">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="5">
-        <widget class="QPushButton" name="save">
-         <property name="styleSheet">
-          <string notr="true">background-color: rgb(51, 51, 51);</string>
-         </property>
-         <property name="text">
-          <string>Save</string>
+          <double>1.000000000000000</double>
          </property>
         </widget>
        </item>

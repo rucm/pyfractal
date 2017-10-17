@@ -11,15 +11,15 @@ class JuliaData(QObject):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.init_data(800, -0.8, 0.156, 256)
+        self.graph = QGraphicsPixmapItem()
 
-    def init_data(self, size, cx, cy, loop):
+    def init_data(self, size, x, y, scale, cx, cy, loop):
         self.size = size
+        self.x, self.y = x, y
         self.cx, self.cy = cx, cy
         self.loop = loop
-        self.lower = -1.5
-        self.upper = 1.5
-        self.graph = QGraphicsPixmapItem()
+        self.lower = -1.5 / scale
+        self.upper = 1.5 / scale
 
     def calculate(self, h=None, s=None, v=None):
         from fractal import julia_set, min_max
@@ -29,8 +29,8 @@ class JuliaData(QObject):
 
         start = time.time()
         _, _, n = julia_set(
-            self.lower, self.upper,
-            self.lower, self.upper,
+            self.lower + self.x, self.upper + self.x,
+            self.lower + self.y, self.upper + self.y,
             self.cx, self.cy,
             self.size, self.size,
             self.loop
