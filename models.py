@@ -27,7 +27,6 @@ class JuliaData(QObject):
         import time
         from itertools import product
 
-        start = time.time()
         _, _, n = julia_set(
             self.lower + self.x, self.upper + self.x,
             self.lower + self.y, self.upper + self.y,
@@ -38,6 +37,7 @@ class JuliaData(QObject):
 
         n = min_max(n)
 
+        start = time.time()
         image = QImage(self.size, self.size, QImage.Format_ARGB32)
         color = QColor()
         for i, j in product(range(self.size), range(self.size)):
