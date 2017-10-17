@@ -94,6 +94,20 @@ class MainWindow(QMainWindow):
         self.ui.view.setScene(self.scene)
 
         self.julia_data = JuliaData()
-        self.julia_data.calcurate()
+        self.ui.run.clicked.connect(self.run)
+        self.run()
+
+    @pyqtSlot()
+    def run(self):
+        if self.julia_data.graph.scene() is not None:
+            self.scene.removeItem(self.julia_data.graph)
+        cx = self.ui.c_x.value()
+        cy = self.ui.c_y.value()
+        loop = self.ui.loop_limit.value()
+        h = None if self.ui.use_h.isChecked() else self.ui.h.value()
+        s = None if self.ui.use_s.isChecked() else self.ui.s.value()
+        v = None if self.ui.use_v.isChecked() else self.ui.v.value()
+        self.julia_data.init_data(800, cx, cy, loop)
+        t = self.julia_data.calculate(h, s, v)
         self.scene.addItem(self.julia_data.graph)
-        
+        self.ui.processing_time.setText('{:.5f}s'.format(t))

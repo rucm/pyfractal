@@ -21,10 +21,13 @@ class JuliaData(QObject):
         self.upper = 1.5
         self.graph = QGraphicsPixmapItem()
 
-    def calcurate(self):
+    def calculate(self, h=None, s=None, v=None):
         from fractal import julia_set, min_max
         from PyQt5.QtGui import QImage, QPixmap, QPainter, QColor
+        import time
+        from itertools import product
 
+        start = time.time()
         _, _, n = julia_set(
             self.lower, self.upper,
             self.lower, self.upper,
@@ -36,9 +39,12 @@ class JuliaData(QObject):
         n = min_max(n)
 
         image = QImage(self.size, self.size, QImage.Format_ARGB32)
-        from itertools import product
+        color = QColor()
         for i, j in product(range(self.size), range(self.size)):
-            color = QColor()
-            color.setHsvF(0.5, 1.0, n[i, j])
+            _h = n[i, j] if h is None else h
+            _s = n[i, j] if s is None else s
+            _v = n[i, j] if v is None else v
+            color.setHsvF(_h, _s, _v)
             image.setPixelColor(i, j, color)
         self.graph.setPixmap(QPixmap.fromImage(image))
+        return time.time() - start
