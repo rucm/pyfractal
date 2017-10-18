@@ -4,11 +4,9 @@ from numba import jit, guvectorize, i4, c16
 from fractal import julia_set, min_max
 
 
-@guvectorize(
-    ['(i4[:,:,:], i4[:,:],i4[:,:,:])'],
-    '(n,m,p),(n,m)->(n,m,p)',
-    target='parallel'
-    )
+@guvectorize(['(i4[:,:,:], i4[:,:],i4[:,:,:])'],
+             '(n,m,p),(n,m)->(n,m,p)',
+             target='parallel')
 def image_v(image, v, output):
     for i in range(v.shape[0]):
         for j in range(v.shape[1]):

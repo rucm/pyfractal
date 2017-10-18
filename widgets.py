@@ -1,8 +1,11 @@
 from PyQt5.QtCore import (
     Qt,
+    QRectF,
+    QPointF,
     QTimer,
     QTimeLine,
-    pyqtSlot
+    pyqtSlot,
+    pyqtSignal
 )
 from PyQt5.QtWidgets import (
     QWidget,
@@ -83,6 +86,41 @@ class View(QGraphicsView):
         self.sender().deleteLater()
 
 
+class Scene(QGraphicsScene):
+
+    set_rect = pyqtSignal('QRectF')
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.center = None
+        self.graph = None
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.center = event.scenePos()
+            rect = QRectF()
+            self.graph = self.addRect(
+                QRectF(self.center, self.center),
+                Qt.white)
+
+    def mouseMoveEvent(self, event):
+        if self.center is not None:
+            p = event.scenePos() - self.center
+            p = QPointF(p.x(), p.x())
+            rect = QRectF(
+                self.center - p,
+                self.center + p
+            )
+            self.graph.setRect(rect)
+
+    def mouseReleaseEvent(self, event):
+        if self.center is not None:
+            # self.set_rect.emit(self.graph.rect())
+            self.removeItem(self.graph)
+            self.center = None
+            self.graph = None
+
+
 class MainWindow(QMainWindow):
 
     def __init__(self, parent=None):
@@ -90,8 +128,19 @@ class MainWindow(QMainWindow):
         Ui = uic.loadUiType('form.ui')[0]
         self.ui = Ui()
         self.ui.setupUi(self)
-        self.scene = QGraphicsScene(self)
+        self.scene = Scene(self)
         self.ui.view.setScene(self.scene)
+        self.scene.set_rect.connect(self.set_rect)
+
+        self.ui.use_h.setId(self.ui.hp, 0)
+        self.ui.use_h.setId(self.ui.hd, 1)
+        self.ui.use_h.setId(self.ui.hz, 2)
+        self.ui.use_s.setId(self.ui.sp, 0)
+        self.ui.use_s.setId(self.ui.sd, 1)
+        self.ui.use_s.setId(self.ui.sz, 2)
+        self.ui.use_v.setId(self.ui.vp, 0)
+        self.ui.use_v.setId(self.ui.vd, 1)
+        self.ui.use_v.setId(self.ui.vz, 2)
 
         self.julia_data = JuliaData()
         self.ui.run.clicked.connect(self.run)
@@ -108,11 +157,19 @@ class MainWindow(QMainWindow):
         cx = self.ui.cx.value()
         cy = self.ui.cy.value()
         loop = self.ui.loop.value()
-        h = None if self.ui.use_h.isChecked() else self.ui.h.value()
-        s = None if self.ui.use_s.isChecked() else self.ui.s.value()
-        v = None if self.ui.use_v.isChecked() else self.ui.v.value()
+        h = None if self.ui.use_h.checkedId() == 1 else self.ui.h.value()
+        s = None if self.ui.use_s.checkedId() == 1 else self.ui.s.value()
+        v = None if self.ui.use_v.checkedId() == 1 else self.ui.v.value()
         self.julia_data.init_data(size, x, y, scale, cx, cy, loop)
         t = self.julia_data.calculate(h, s, v)
         self.scene.addItem(self.julia_data.graph)
         self.scene.setSceneRect(self.scene.itemsBoundingRect())
         self.ui.processing_time.setText('{:.5f}s'.format(t))
+
+    @pyqtSlot('QRectF')
+    def set_rect(self, rect):
+        origin = self.julia_data.graph.boundingRect()
+        rect = self.julia_data.graph.mapRectFromScene(rect)
+        c = (rect.center() - origin.center()) / origin.width() * 3.0
+        self.ui.x.setValue(c.x())
+        self.ui.y.setValue(c.y())

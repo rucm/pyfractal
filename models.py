@@ -22,12 +22,13 @@ class JuliaData(QObject):
         self.upper = 1.5 / scale
 
     def calculate(self, h=None, s=None, v=None):
-        from fractal import julia_set, min_max
+        from fractal import julia_set, min_max, mandelbrot_set
         from PyQt5.QtGui import QImage, QPixmap, QPainter, QColor
         import time
         from itertools import product
 
-        _, _, n = julia_set(
+        start = time.time()
+        _, _, n, m = mandelbrot_set(
             self.lower + self.x, self.upper + self.x,
             self.lower + self.y, self.upper + self.y,
             self.cx, self.cy,
@@ -36,12 +37,12 @@ class JuliaData(QObject):
         )
 
         n = min_max(n)
+        m = min_max(m)
 
-        start = time.time()
         image = QImage(self.size, self.size, QImage.Format_ARGB32)
         color = QColor()
         for i, j in product(range(self.size), range(self.size)):
-            _h = n[i, j] if h is None else h
+            _h = m[i, j] if h is None else h
             _s = n[i, j] if s is None else s
             _v = n[i, j] if v is None else v
             color.setHsvF(_h, _s, _v)
