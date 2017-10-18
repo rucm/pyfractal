@@ -1,10 +1,27 @@
 from PyQt5.QtCore import (
     Qt,
-    QObject
+    QObject,
+    QPointF
 )
 from PyQt5.QtWidgets import (
     QGraphicsPixmapItem
 )
+
+
+class FractalData(QObject):
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.set_default_data()
+
+    def set_default_data(self):
+        self.x, self.y = 0.0, 0.0
+        self.cx, self.cy = 0.0, 0.0
+        self.loop = 256
+        self.scale = 1.0
+        self.size = 800
+        self.xmin, self.xmax = -1.5, 1.5
+        self.ymin, self.ymax = -1.5, 1.5
 
 
 class JuliaData(QObject):
@@ -18,6 +35,7 @@ class JuliaData(QObject):
         self.x, self.y = x, y
         self.cx, self.cy = cx, cy
         self.loop = loop
+        self.scale = scale
         self.lower = -1.5 / scale
         self.upper = 1.5 / scale
 

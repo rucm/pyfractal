@@ -115,7 +115,7 @@ class Scene(QGraphicsScene):
 
     def mouseReleaseEvent(self, event):
         if self.center is not None:
-            # self.set_rect.emit(self.graph.rect())
+            self.set_rect.emit(self.graph.rect())
             self.removeItem(self.graph)
             self.center = None
             self.graph = None
@@ -146,6 +146,8 @@ class MainWindow(QMainWindow):
         self.ui.run.clicked.connect(self.run)
         self.run()
 
+        self.center = self.julia_data.graph.boundingRect().topLeft()
+
     @pyqtSlot()
     def run(self):
         if self.julia_data.graph.scene() is not None:
@@ -168,8 +170,13 @@ class MainWindow(QMainWindow):
 
     @pyqtSlot('QRectF')
     def set_rect(self, rect):
-        origin = self.julia_data.graph.boundingRect()
         rect = self.julia_data.graph.mapRectFromScene(rect)
+        if rect.width() == 0.0:
+            return
+        origin = self.julia_data.graph.boundingRect()
+        scale = origin.width() / rect.width()
         c = (rect.center() - origin.center()) / origin.width() * 3.0
-        self.ui.x.setValue(c.x())
-        self.ui.y.setValue(c.y())
+        self.ui.x.setValue(c.x() + self.center.x())
+        self.ui.y.setValue(c.y() + self.center.y())
+        self.ui.scale.setValue(scale)
+        self.center = rect.topLeft() / origin.width() * 3.0
