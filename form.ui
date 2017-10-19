@@ -152,7 +152,7 @@ border-color: rgb(102, 102, 102);
              <property name="midLineWidth">
               <number>1</number>
              </property>
-             <layout class="QGridLayout" name="gridLayout" columnstretch="2,2,2,2,2,2,0" rowminimumheight="0,0,0,0,0,0,0">
+             <layout class="QGridLayout" name="gridLayout" columnstretch="2,2,2,2,2,2" rowminimumheight="0,0,0,0,0,0,0">
               <item row="4" column="1">
                <widget class="QDoubleSpinBox" name="cy">
                 <property name="styleSheet">
@@ -261,7 +261,7 @@ border-color: rgb(102, 102, 102);
                </widget>
               </item>
               <item row="5" column="5">
-               <widget class="QSpinBox" name="loop">
+               <widget class="QSpinBox" name="repeat_count">
                 <property name="styleSheet">
                  <string notr="true">background-color: rgb(51, 51, 51);</string>
                 </property>
@@ -279,7 +279,7 @@ border-color: rgb(102, 102, 102);
               <item row="5" column="4">
                <widget class="QLabel" name="label_7">
                 <property name="text">
-                 <string>Loop Limit</string>
+                 <string>Repeat Count</string>
                 </property>
                </widget>
               </item>
@@ -517,7 +517,7 @@ border-color: rgb(102, 102, 102);
              <property name="midLineWidth">
               <number>1</number>
              </property>
-             <layout class="QGridLayout" name="gridLayout_3" rowstretch="1,1,1,1,1" columnstretch="2,1,1,1" rowminimumheight="1,1,1,1,0" columnminimumwidth="1,1,1,1">
+             <layout class="QGridLayout" name="gridLayout_3" rowstretch="1,1,1,1" columnstretch="2,1,1,1" rowminimumheight="1,1,1,1" columnminimumwidth="1,1,1,1">
               <item row="2" column="3">
                <widget class="QRadioButton" name="sz">
                 <property name="text">
@@ -723,8 +723,8 @@ border-color: rgb(102, 102, 102);
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="use_h"/>
   <buttongroup name="use_s"/>
   <buttongroup name="use_v"/>
+  <buttongroup name="use_h"/>
  </buttongroups>
 </ui>

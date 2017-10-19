@@ -17,11 +17,27 @@ class FractalData(QObject):
     def set_default_data(self):
         self.x, self.y = 0.0, 0.0
         self.cx, self.cy = 0.0, 0.0
-        self.loop = 256
+        self.repeat_count = 256
         self.scale = 1.0
         self.size = 800
         self.xmin, self.xmax = -1.5, 1.5
         self.ymin, self.ymax = -1.5, 1.5
+
+    def set_range(self, xmin, xmax, ymin, ymax):
+        self.xmin, self.xmax = xmin, xmax
+        self.ymin, self.ymax = ymin, ymax
+
+    def set_size(self, size):
+        self.size = size
+
+    def set_scale(self, scale):
+        self.scale = scale
+
+    def set_repeat_count(self, repeat_count):
+        self.repeat_count = repeat_count
+
+    def set_constant(self, cx, cy):
+        self.cx, self.cy = cx, cy
 
 
 class JuliaData(QObject):
@@ -30,11 +46,11 @@ class JuliaData(QObject):
         super().__init__(parent)
         self.graph = QGraphicsPixmapItem()
 
-    def init_data(self, size, x, y, scale, cx, cy, loop):
+    def init_data(self, size, x, y, scale, cx, cy, repeat_count):
         self.size = size
         self.x, self.y = x, y
         self.cx, self.cy = cx, cy
-        self.loop = loop
+        self.repeat_count = repeat_count
         self.scale = scale
         self.lower = -1.5 / scale
         self.upper = 1.5 / scale
@@ -51,7 +67,7 @@ class JuliaData(QObject):
             self.lower + self.y, self.upper + self.y,
             self.cx, self.cy,
             self.size, self.size,
-            self.loop
+            self.repeat_count
         )
 
         n = min_max(n)

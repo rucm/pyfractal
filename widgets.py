@@ -158,11 +158,11 @@ class MainWindow(QMainWindow):
         scale = self.ui.scale.value()
         cx = self.ui.cx.value()
         cy = self.ui.cy.value()
-        loop = self.ui.loop.value()
+        repeat_count = self.ui.repeat_count.value()
         h = None if self.ui.use_h.checkedId() == 1 else self.ui.h.value()
         s = None if self.ui.use_s.checkedId() == 1 else self.ui.s.value()
         v = None if self.ui.use_v.checkedId() == 1 else self.ui.v.value()
-        self.julia_data.init_data(size, x, y, scale, cx, cy, loop)
+        self.julia_data.init_data(size, x, y, scale, cx, cy, repeat_count)
         t = self.julia_data.calculate(h, s, v)
         self.scene.addItem(self.julia_data.graph)
         self.scene.setSceneRect(self.scene.itemsBoundingRect())
@@ -171,6 +171,7 @@ class MainWindow(QMainWindow):
     @pyqtSlot('QRectF')
     def set_rect(self, rect):
         rect = self.julia_data.graph.mapRectFromScene(rect)
+        print(rect.topLeft())
         if rect.width() == 0.0:
             return
         origin = self.julia_data.graph.boundingRect()
