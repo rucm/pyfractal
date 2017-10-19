@@ -261,7 +261,7 @@ border-color: rgb(102, 102, 102);
                </widget>
               </item>
               <item row="5" column="5">
-               <widget class="QSpinBox" name="repeat_count">
+               <widget class="QSpinBox" name="repeat_cnt">
                 <property name="styleSheet">
                  <string notr="true">background-color: rgb(51, 51, 51);</string>
                 </property>
