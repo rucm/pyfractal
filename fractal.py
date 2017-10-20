@@ -36,7 +36,7 @@ def mandelbrot_set(xmin, xmax, ymin, ymax, width, height, repeat_cnt):
     r2 = np.linspace(ymin, ymax, height, dtype='f8')
     c = r1 + r2[:, None] * 1j
     n3, n4 = mandelbrot_numpy(c, repeat_cnt)
-    return r1, r2, n3.T, n4.T
+    return r1, r2, n3, n4
 
 
 # ------------------------------------ #
@@ -73,7 +73,7 @@ def julia_set(xmin, xmax, ymin, ymax, cx, cy, width, height, repeat_cnt):
     r2 = np.linspace(ymin, ymax, height, dtype='f8')
     z = r1 + r2[:, None] * 1j
     n3, n4 = julia_numpy(z, cx + cy * 1j, repeat_cnt)
-    return r1, r2, n3.T, n4.T
+    return r1, r2, n3, n4
 
 
 # ------------------------------------ #

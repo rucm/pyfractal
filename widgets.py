@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5 import uic
 
-from models import JuliaData
+from models import FractalData
 
 
 class View(QGraphicsView):
@@ -132,52 +132,64 @@ class MainWindow(QMainWindow):
         self.ui.view.setScene(self.scene)
         self.scene.set_rect.connect(self.set_rect)
 
-        self.ui.use_h.setId(self.ui.hp, 0)
-        self.ui.use_h.setId(self.ui.hd, 1)
-        self.ui.use_h.setId(self.ui.hz, 2)
-        self.ui.use_s.setId(self.ui.sp, 0)
-        self.ui.use_s.setId(self.ui.sd, 1)
-        self.ui.use_s.setId(self.ui.sz, 2)
-        self.ui.use_v.setId(self.ui.vp, 0)
-        self.ui.use_v.setId(self.ui.vd, 1)
-        self.ui.use_v.setId(self.ui.vz, 2)
+        self.ui.fractal_type.addItem('mandelbrot')
+        self.ui.fractal_type.addItem('julia')
 
-        self.julia_data = JuliaData()
+        self.fractal_data = FractalData()
         self.ui.run.clicked.connect(self.run)
+        self.ui.reset.clicked.connect(self.reset)
         self.run()
 
-        self.center = self.julia_data.graph.boundingRect().topLeft()
+    @pyqtSlot()
+    def reset(self):
+        self.ui.fractal_type.setCurrentIndex(0)
+        self.ui.x.setValue(0.0)
+        self.ui.y.setValue(0.0)
+        self.ui.scale.setValue(1.0)
+        self.ui.cx.setValue(-0.8)
+        self.ui.cy.setValue(0.16)
+        self.ui.repeat_cnt.setValue(256)
+        self.ui.size.setValue(800)
+        self.ui.h.setValue(127)
+        self.ui.s.setValue(255)
+        self.ui.v.setValue(255)
+        self.ui.h_default.setChecked(True)
+        self.ui.s_default.setChecked(True)
+        self.ui.v_divergence.setChecked(True)
 
     @pyqtSlot()
     def run(self):
-        if self.julia_data.graph.scene() is not None:
-            self.scene.removeItem(self.julia_data.graph)
-        size = self.ui.size.value()
-        x = self.ui.x.value()
-        y = self.ui.y.value()
-        scale = self.ui.scale.value()
-        cx = self.ui.cx.value()
-        cy = self.ui.cy.value()
-        repeat_cnt = self.ui.repeat_cnt.value()
-        h = None if self.ui.use_h.checkedId() == 1 else self.ui.h.value()
-        s = None if self.ui.use_s.checkedId() == 1 else self.ui.s.value()
-        v = None if self.ui.use_v.checkedId() == 1 else self.ui.v.value()
-        self.julia_data.init_data(size, x, y, scale, cx, cy, repeat_cnt)
-        t = self.julia_data.calculate(h, s, v)
-        self.scene.addItem(self.julia_data.graph)
+        if self.fractal_data.item.scene() is not None:
+            self.scene.removeItem(self.fractal_data.item)
+        self.fractal_data.set_param(
+            self.ui.x.value(), self.ui.y.value(),
+            self.ui.scale.value(),
+            self.ui.cx.value(), self.ui.cy.value(),
+            self.ui.repeat_cnt.value()
+        )
+        self.fractal_data.set_image_param(
+            self.ui.size.value(),
+            self.ui.h.value(), self.ui.s.value(), self.ui.v.value()
+        )
+        self.fractal_data.select_data(
+            self.ui.use_h.checkedButton().text(),
+            self.ui.use_s.checkedButton().text(),
+            self.ui.use_v.checkedButton().text()
+        )
+        t = self.fractal_data.calculate(self.ui.fractal_type.currentText())
+        self.scene.addItem(self.fractal_data.item)
         self.scene.setSceneRect(self.scene.itemsBoundingRect())
         self.ui.processing_time.setText('{:.5f}s'.format(t))
 
     @pyqtSlot('QRectF')
     def set_rect(self, rect):
-        rect = self.julia_data.graph.mapRectFromScene(rect)
-        print(rect.topLeft())
         if rect.width() == 0.0:
             return
-        origin = self.julia_data.graph.boundingRect()
+        origin = self.fractal_data.item.boundingRect()
+        rect = self.fractal_data.item.mapRectFromScene(rect)
         scale = origin.width() / rect.width()
-        c = (rect.center() - origin.center()) / origin.width() * 3.0
-        self.ui.x.setValue(c.x() + self.center.x())
-        self.ui.y.setValue(c.y() + self.center.y())
-        self.ui.scale.setValue(scale)
-        self.center = rect.topLeft() / origin.width() * 3.0
+        dif = self.fractal_data.xmax - self.fractal_data.xmin
+        center = rect.center() / origin.width() * dif
+        self.ui.scale.setValue(self.fractal_data.scale * scale)
+        self.ui.x.setValue(center.x() + self.fractal_data.xmin)
+        self.ui.y.setValue(center.y() + self.fractal_data.ymin)
