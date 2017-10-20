@@ -33,6 +33,10 @@ class FractalData(QObject):
     def select_data(self, use_h, use_s, use_v):
         self.use_h, self.use_s, self.use_v = use_h, use_s, use_v
 
+    def save(self, filename):
+        import fractal
+        fractal.save_image(self.image, filename, 'PNG')
+
     def calculate(self, fractal_type):
         import time
         import fractal

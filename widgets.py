@@ -11,7 +11,8 @@ from PyQt5.QtWidgets import (
     QWidget,
     QMainWindow,
     QGraphicsView,
-    QGraphicsScene
+    QGraphicsScene,
+    QFileDialog
 )
 from PyQt5 import uic
 
@@ -138,24 +139,8 @@ class MainWindow(QMainWindow):
         self.fractal_data = FractalData()
         self.ui.run.clicked.connect(self.run)
         self.ui.reset.clicked.connect(self.reset)
+        self.ui.save.clicked.connect(self.save)
         self.run()
-
-    @pyqtSlot()
-    def reset(self):
-        self.ui.fractal_type.setCurrentIndex(0)
-        self.ui.x.setValue(0.0)
-        self.ui.y.setValue(0.0)
-        self.ui.scale.setValue(1.0)
-        self.ui.cx.setValue(-0.8)
-        self.ui.cy.setValue(0.16)
-        self.ui.repeat_cnt.setValue(256)
-        self.ui.size.setValue(800)
-        self.ui.h.setValue(127)
-        self.ui.s.setValue(255)
-        self.ui.v.setValue(255)
-        self.ui.h_default.setChecked(True)
-        self.ui.s_default.setChecked(True)
-        self.ui.v_divergence.setChecked(True)
 
     @pyqtSlot()
     def run(self):
@@ -180,6 +165,34 @@ class MainWindow(QMainWindow):
         self.scene.addItem(self.fractal_data.item)
         self.scene.setSceneRect(self.scene.itemsBoundingRect())
         self.ui.processing_time.setText('{:.5f}s'.format(t))
+
+    @pyqtSlot()
+    def reset(self):
+        self.ui.fractal_type.setCurrentIndex(0)
+        self.ui.x.setValue(0.0)
+        self.ui.y.setValue(0.0)
+        self.ui.scale.setValue(1.0)
+        self.ui.cx.setValue(-0.8)
+        self.ui.cy.setValue(0.16)
+        self.ui.repeat_cnt.setValue(256)
+        self.ui.size.setValue(800)
+        self.ui.h.setValue(127)
+        self.ui.s.setValue(255)
+        self.ui.v.setValue(255)
+        self.ui.h_default.setChecked(True)
+        self.ui.s_default.setChecked(True)
+        self.ui.v_divergence.setChecked(True)
+
+    @pyqtSlot()
+    def save(self):
+        filename = QFileDialog.getSaveFileName(
+            self,
+            'Save',
+            '',
+            'png (*.png)'
+        )[0]
+        if filename != '':
+            self.fractal_data.save(filename)
 
     @pyqtSlot('QRectF')
     def set_rect(self, rect):
