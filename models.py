@@ -17,14 +17,14 @@ class FractalData(QObject):
         self.z_abs = None
         self.item = QGraphicsPixmapItem()
 
-    def set_param(self, x, y, scale, cx, cy, repeat_cnt):
+    def set_param(self, x, y, scale, cx, cy, steps):
         self.xmin = -1.5 / scale + x
         self.xmax = 1.5 / scale + x
         self.ymin = -1.5 / scale + y
         self.ymax = 1.5 / scale + y
         self.scale = scale
         self.cx, self.cy = cx, cy
-        self.repeat_cnt = int(repeat_cnt)
+        self.steps = int(steps)
 
     def set_image_param(self, size, h, s, v):
         self.size = size
@@ -45,14 +45,14 @@ class FractalData(QObject):
             _, _, self.divergence, self.z_abs = fractal.mandelbrot_set(
                 self.xmin, self.xmax, self.ymin, self.ymax,
                 self.size, self.size,
-                self.repeat_cnt
+                self.steps
             )
         elif fractal_type == 'julia':
             _, _, self.divergence, self.z_abs = fractal.julia_set(
                 self.xmin, self.xmax, self.ymin, self.ymax,
                 self.cx, self.cy,
                 self.size, self.size,
-                self.repeat_cnt
+                self.steps
             )
         self.divergence = fractal.min_max(self.divergence, 255, 0)
         self.z_abs = fractal.min_max(self.z_abs, 255, 0)

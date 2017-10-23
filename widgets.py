@@ -150,7 +150,7 @@ class MainWindow(QMainWindow):
             self.ui.x.value(), self.ui.y.value(),
             self.ui.scale.value(),
             self.ui.cx.value(), self.ui.cy.value(),
-            self.ui.repeat_cnt.value()
+            self.ui.steps.value()
         )
         self.fractal_data.set_image_param(
             self.ui.size.value(),
@@ -174,7 +174,7 @@ class MainWindow(QMainWindow):
         self.ui.scale.setValue(1.0)
         self.ui.cx.setValue(-0.8)
         self.ui.cy.setValue(0.16)
-        self.ui.repeat_cnt.setValue(256)
+        self.ui.steps.setValue(256)
         self.ui.size.setValue(800)
         self.ui.h.setValue(127)
         self.ui.s.setValue(255)
