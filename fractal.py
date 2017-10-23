@@ -98,6 +98,10 @@ def save_image(image, filename, filetype):
     img.save(filename, filetype)
 
 
+def cubic_bezier_curve(p1, p2, p3, p4, t):
+    pass
+
+
 @guvectorize(
     ['(i4[:,:,:],i4[:,:],i4[:],i4[:,:,:])'],
     '(n,m,p),(n,m),()->(n,m,p)',
