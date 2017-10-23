@@ -25,15 +25,15 @@ def mandelbrot(c, steps):
     ['(c16[:],i8[:],f8[:],f8[:])'],
     '(n),()->(n),(n)',
     target='parallel')
-def mandelbrot_numpy(c, stepss, out1, out2):
-    steps = stepss[0]
+def mandelbrot_numpy(c, steps, out1, out2):
+    _steps = steps[0]
     for i in range(c.shape[0]):
-        out1[i], out2[i] = mandelbrot(c[i], steps)
+        out1[i], out2[i] = mandelbrot(c[i], _steps)
 
 
-def mandelbrot_set(xmin, xmax, ymin, ymax, width, height, steps):
-    r1 = np.linspace(xmin, xmax, width, dtype='f8')
-    r2 = np.linspace(ymin, ymax, height, dtype='f8')
+def mandelbrot_set(xmin, xmax, ymin, ymax, size, steps):
+    r1 = np.linspace(xmin, xmax, size, dtype='f8')
+    r2 = np.linspace(ymin, ymax, size, dtype='f8')
     c = r1 + r2[:, None] * 1j
     n3, n4 = mandelbrot_numpy(c, steps)
     return r1, r2, n3, n4
@@ -61,16 +61,16 @@ def julia(z, c, steps):
     ['(c16[:],c16[:],i8[:],f8[:],f8[:])'],
     '(n),(),()->(n),(n)',
     target='parallel')
-def julia_numpy(z, c, stepss, out1, out2):
-    steps = stepss[0]
+def julia_numpy(z, c, steps, out1, out2):
+    steps = steps[0]
     _c = c[0]
     for i in range(z.shape[0]):
         out1[i], out2[i] = julia(z[i], _c, steps)
 
 
-def julia_set(xmin, xmax, ymin, ymax, cx, cy, width, height, steps):
-    r1 = np.linspace(xmin, xmax, width, dtype='f8')
-    r2 = np.linspace(ymin, ymax, height, dtype='f8')
+def julia_set(xmin, xmax, ymin, ymax, cx, cy, size, steps):
+    r1 = np.linspace(xmin, xmax, size, dtype='f8')
+    r2 = np.linspace(ymin, ymax, size, dtype='f8')
     z = r1 + r2[:, None] * 1j
     n3, n4 = julia_numpy(z, cx + cy * 1j, steps)
     return r1, r2, n3, n4

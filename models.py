@@ -44,16 +44,12 @@ class FractalData(QObject):
         if fractal_type == 'mandelbrot':
             _, _, self.divergence, self.z_abs = fractal.mandelbrot_set(
                 self.xmin, self.xmax, self.ymin, self.ymax,
-                self.size, self.size,
-                self.steps
-            )
+                self.size, self.steps)
         elif fractal_type == 'julia':
             _, _, self.divergence, self.z_abs = fractal.julia_set(
                 self.xmin, self.xmax, self.ymin, self.ymax,
                 self.cx, self.cy,
-                self.size, self.size,
-                self.steps
-            )
+                self.size, self.steps)
         self.divergence = fractal.min_max(self.divergence, 255, 0)
         self.z_abs = fractal.min_max(self.z_abs, 255, 0)
         self.image = fractal.create_image(self.size, self.h, self.s, self.v)
