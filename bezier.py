@@ -12,10 +12,14 @@ def bezier(p1, p2, p3, p4, t):
 
 if __name__ == '__main__':
     p1 = np.asarray([0, 0])
-    p2 = np.asarray([0.5, 0])
-    p3 = np.asarray([0.5, 1.0])
+    p2 = np.asarray([1.0, 1.0])
+    p3 = np.asarray([0.0, 1.0])
     p4 = np.asarray([1.0, 1.0])
     t = np.linspace(0, 1, 256, dtype='f8')
-    for i in range(256):
-        p = bezier(p1, p2, p3, p4, t[i])
-        print('{}, {}, {}'.format(i, p[0], p[1]))
+    # for i in range(256):
+    #     p = bezier(p1, p2, p3, p4, t[i])
+    #     print('{}, {}, {}'.format(i, p[0], p[1]))
+
+    t = np.linspace(1, 0, 256, dtype='f8')
+    for i, _t in enumerate(t):
+        print('{}, {}'.format(i, _t))
