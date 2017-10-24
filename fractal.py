@@ -107,7 +107,7 @@ def cubic_bezier(p1, p2):
     return __cubic_bezier_vec(begin, p1, p2, end, rates)
 
 
-__default_option = {
+__default = {
     'hue': {
         'range': [0.5, 0.5],
         'easing': {
@@ -132,27 +132,34 @@ __default_option = {
 }
 
 
-def create_pallette(option: dict):
-    hue = option.get('hue', __default_option['hue'])
-    h_range = [255 * hue['range'][0], 255 * hue['range'][1]]
-    h = cubic_bezier(
-        np.asarray(hue['easing']['p1']),
-        np.asarray(hue['easing']['p2']))
-    h = min_max_normalize(h, h_range[0], h_range[1]).astype(np.uint8)
+def __palette_param(option: dict):
+    palette_range = [option['range'][0] * 255, option['range'][1] * 255]
+    palette = cubic_bezier(
+        np.asarray(option['easing']['p1']),
+        np.asarray(option['easing']['p2'])
+    )
+    palette = min_max_normalize(
+        palette,
+        palette_range[0],
+        palette_range[1])
+    print(type(palette))
+    return palette.astype(np.uint8)
 
-    saturation = option.get('saturation', __default_option['saturation'])
-    s_range = [255 * saturation['range'][0], 255 * saturation['range'][1]]
-    s = cubic_bezier(
-        np.asarray(saturation['easing']['p1']),
-        np.asarray(saturation['easing']['p2']))
-    s = min_max_normalize(s, s_range[0], s_range[1]).astype(np.uint8)
 
-    brightness = option.get('brightness', __default_option['brightness'])
-    b_range = [255 * brightness['range'][0], 255 * brightness['range'][1]]
-    b = cubic_bezier(
-        np.asarray(brightness['easing']['p1']),
-        np.asarray(brightness['easing']['p2']))
-    b = min_max_normalize(b, b_range[0], b_range[1]).astype(np.uint8)
+@jit('void(i8[:,:],i8[:],i8[:],i8[:])', nopython=True)
+def __create_palette_vec(palette, h, s, b):
+    for i in range(palette.shape[0]):
+        palette[i] = (h[i], s[i], b[i])
+
+
+def create_palette(option: dict=__default):
+    h = __palette_param(option.get('hue', __default['hue']))
+    s = __palette_param(option.get('saturation', __default['saturation']))
+    b = __palette_param(option.get('brightness', __default['brightness']))
+    palette = np.asarray(np.zeros((256, 3))).astype(np.uint8)
+    print(type(palette))
+    __create_palette_vec(palette, h, s, b)
+    return palette
 
 
 # ------------------------------------ #
@@ -160,51 +167,20 @@ def create_pallette(option: dict):
 # ------------------------------------ #
 
 
-def create_image(size, h, s, v):
-    image = Image.new('HSV', (size, size), (h, s, v))
-    return image
-
-
-def save_image(image, filename, filetype):
-    img = image.convert('RGB')
-    img.save(filename, filetype)
-
-
 @guvectorize(
-    ['(i4[:,:,:],i4[:,:],i4[:],i4[:,:,:])'],
-    '(n,m,p),(n,m),()->(n,m,p)',
+    ['(i8[:,:],i8[:,:],i8[:,:,:])'],
+    '(n,m),(p,o)->(n,m,o)',
     target='parallel')
-def __change_color(image, d, indices, output):
-    index = indices[0]
-    for i in range(d.shape[0]):
-        for j in range(d.shape[1]):
-            color = image[i, j]
-            color[index] = d[i, j]
-            output[i, j] = color
+def __apply_palette(data, palette, output):
+    for i in range(data.shape[0]):
+        for j in range(data.shape[1]):
+            output[i, j] = palette[data[i, j]]
 
 
-def change_hue(image, data):
-    d = data.astype(np.uint8)
-    image_array = np.asarray(image)
-    image_array = __change_color(image_array, d, 0)
-    img = Image.fromarray(np.uint8(image_array), mode='HSV')
-    return img
-
-
-def change_saturation(image, data):
-    d = data.astype(np.uint8)
-    image_array = np.asarray(image)
-    image_array = __change_color(image_array, d, 1)
-    img = Image.fromarray(np.uint8(image_array), mode='HSV')
-    return img
-
-
-def change_value(image, data):
-    d = data.astype(np.uint8)
-    image_array = np.asarray(image)
-    image_array = __change_color(image_array, d, 2)
-    img = Image.fromarray(np.uint8(image_array), mode='HSV')
-    return img
+def create_image(data, palette):
+    image = __apply_palette(data, palette)
+    image = Image.fromarray(np.uint8(image), mode='HSV')
+    return image.convert('RGB')
 
 
 def to_qpixmap(image):
@@ -214,19 +190,11 @@ def to_qpixmap(image):
 
 
 if __name__ == '__main__':
-    _, _, n = julia_set(
+    _, _, data = julia_set(
         -1.5, 1.5, -1.5, 1.5, -0.3, -0.63, 400, 256
     )
 
-    n = min_max_normalize(n, 255, 0)
-
-    image = create_image(400, 128, 255, 255)
-    image = change_value(image, n)
-    save_image(image, 'test.png', 'PNG')
-
-    p1 = np.asarray([1.0, 1.0])
-    p2 = np.asarray([0.0, 1.0])
-    bezier = cubic_bezier(p1, p2)
-    bezier = min_max_normalize(bezier, 0.5 * 255, 1.0 * 255)
-    for b in bezier:
-        print('{}, {}'.format(b[0], b[1]))
+    palette = create_palette()
+    data = min_max_normalize(data, 0, 255).astype(np.uint8)
+    image = create_image(data, palette)
+    image.save('test-julia.png', 'PNG')
