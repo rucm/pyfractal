@@ -75,6 +75,169 @@ def julia_set(xmin, xmax, ymin, ymax, cx, cy, size, steps):
 
 
 # ------------------------------------ #
+# Easing                               #
+# ------------------------------------ #
+
+
+class Easing(object):
+
+    @staticmethod
+    def Calc(name: str, t: float, total: float, mx: float, mn: float):
+        return getattr(Easing, name)(t, total, mx, mn)
+
+    @staticmethod
+    def InQuad(t: float, total: float, mx: float, mn: float):
+        dif = mx - mn
+        _t = t / total
+        return -dif * _t * _t + mn
+
+    @staticmethod
+    def OutQuad(t: float, total: float, mx: float, mn: float):
+        dif = mx - mn
+        _t = t / total
+        return -dif * _t * (_t - 2) + mn
+
+    @staticmethod
+    def InOutQuad(t: float, total: float, mx: float, mn: float):
+        dif = mx - mn
+        _t = t / total
+        if _t / 2 < 1:
+            return dif / 2 * _t * _t + mn
+        _t -= 1
+        return -dif * (_t * (_t - 2) - 1) + mn
+
+    @staticmethod
+    def InCubic(t: float, total: float, mx: float, mn: float):
+        dif = mx - mn
+        _t = t / total
+        return dif * _t * _t * _t + mn
+
+    @staticmethod
+    def OutCubic(t: float, total: float, mx: float, mn: float):
+        dif = mx - mn
+        _t = t / total
+        return dif * (_t * _t * _t + 1) + mn
+
+    @staticmethod
+    def InOutCubic(t: float, total: float, mx: float, mn: float):
+        dif = mx - mn
+        _t = t / total
+        if _t / 2 < 1:
+            return dif / 2 * _t * _t * _t + mn
+        _t -= 2
+        return dif / 2 * (_t * _t * _t + 2) + mn
+
+    @staticmethod
+    def InQuart(t: float, total: float, mx: float, mn: float):
+        dif = mx - mn
+        _t = t / total
+        return dif * _t * _t * _t * _t + mn
+
+    @staticmethod
+    def OutQuart(t: float, total: float, mx: float, mn: float):
+        dif = mx - mn
+        _t = t / total
+        return -dif * (_t * _t * _t * _t - 1) + mn
+
+    @staticmethod
+    def InOutQuart(t: float, total: float, mx: float, mn: float):
+        dif = mx - mn
+        _t = t / total
+        if _t / 2 < 1:
+            return dif / 2 * _t * _t * _t * _t + mn
+        _t -= 2
+        return dif / 2 * (_t * _t * _t * _t - 2) + mn
+
+    @staticmethod
+    def InQuint(t: float, total: float, mx: float, mn: float):
+        dif = mx - mn
+        _t = t / total
+        return dif * _t * _t * _t * _t * _t + mn
+
+    @staticmethod
+    def OutQuint(t: float, total: float, mx: float, mn: float):
+        dif = mx - mn
+        _t = t / total - 1
+        return dif * (_t * _t * _t * _t * _t + 1) + mn
+
+    @staticmethod
+    def InOutQuint(t: float, total: float, mx: float, mn: float):
+        dif = mx - mn
+        _t = t / total
+        if _t / 2 < 1:
+            return dif / 2 * _t * _t * _t * _t * _t + mn
+        _t -= 2
+        return dif / 2 * (_t * _t * _t * _t * _t + 2) + mn
+
+    @staticmethod
+    def InSine(t: float, total: float, mx: float, mn: float):
+        dif = mx - mn
+        return -dif * np.cos(t * np.radians(90) / total) + mx
+
+    @staticmethod
+    def OutSine(t: float, total: float, mx: float, mn: float):
+        dif = mx - mn
+        return dif * np.sin(t * np.radians(90) / total) + mn
+
+    @staticmethod
+    def InOutSine(t: float, total: float, mx: float, mn: float):
+        dif = mx - mn
+        return -dif / 2 * (np.cos(t * np.pi / total) - 1) + mn
+
+    @staticmethod
+    def InExp(t: float, total: float, mx: float, mn: float):
+        dif = mx - mn
+        if t == 0.0:
+            return mn
+        return dif * np.power(2, 10 * (t / total - 1)) + mn
+
+    @staticmethod
+    def OutExp(t: float, total: float, mx: float, mn: float):
+        dif = mx - mn
+        if t == total:
+            return mx
+        return dif * (-np.power(2, -10 * t / total) + 1) + mn
+
+    @staticmethod
+    def InOutExp(t: float, total: float, mx: float, mn: float):
+        if t == 0.0:
+            return mn
+        elif t == total:
+            return mx
+        dif = mx - mn
+        _t = t / total
+        if _t / 2 < 1:
+            return dif / 2 * np.power(2, 10 * (_t - 1)) + mn
+        _t -= 1
+        return dif / 2 * (-np.power(2, -10 * _t) + 2) + mn
+
+    @staticmethod
+    def InCirc(t: float, total: float, mx: float, mn: float):
+        dif = mx - mn
+        _t = t / total
+        return -dif * (np.sqrt(1 - _t * _t) - 1) + mn
+
+    @staticmethod
+    def OutCirc(t: float, total: float, mx: float, mn: float):
+        dif = mx - mn
+        _t = t / total
+        return dif * np.sqrt(1 - _t * _t) + mn
+
+    @staticmethod
+    def InOutQuint(t: float, total: float, mx: float, mn: float):
+        dif = mx - mn
+        _t = t / total
+        if _t / 2 < 1:
+            return -dif / 2 * (np.sqrt(1 - _t * _t) - 1) + mn
+        _t -= 2
+        return dif / 2 * (np.sqrt(1 - _t * _t) + 1) + mn
+
+    @staticmethod
+    def Linear(t: float, total: float, mx: float, mn: float):
+        return (mx - mn) * t / total + mn
+
+
+# ------------------------------------ #
 # Utility                              #
 # ------------------------------------ #
 
@@ -85,81 +248,39 @@ def min_max_normalize(data, m=0, M=1, axis=None):
     return (data - mn) / (mx - mn) * (M - m) + m
 
 
-@guvectorize(
-    ['(f8[:],f8[:],f8[:],f8[:],f8[:],f8[:,:])'],
-    '(n),(n),(n),(n),(m)->(m,n)',
-    target='parallel')
-def __cubic_bezier_vec(p1, p2, p3, p4, rates, output):
-    for i in range(rates.shape[0]):
-        t = rates[i]
-        _t = 1 - t
-        b1 = _t * _t * _t * p1
-        b2 = 3 * _t * _t * t * p2
-        b3 = 3 * _t * t * t * p3
-        b4 = t * t * t * p4
-        output[i] = b1 + b2 + b3 + b4
-
-
-def cubic_bezier(p1, p2):
-    begin = np.asarray([0.0, 0.0])
-    end = np.asarray([1.0, 1.0])
-    rates = np.linspace(0, 1, 256, dtype='f8')
-    return __cubic_bezier_vec(begin, p1, p2, end, rates)
-
-
 __default = {
     'hue': {
-        'range': [0.5, 0.5],
-        'easing': {
-            'p1': [0.5, 0.5],
-            'p2': [0.5, 0.5]
-        }
+        'range': [0.2, 0.5],
+        'easing': 'OutSine'
     },
     'saturation': {
         'range': [1.0, 1.0],
-        'easing': {
-            'p1': [0.5, 0.5],
-            'p2': [0.5, 0.5]
-        }
+        'easing': 'Linear'
     },
     'brightness': {
-        'range': [0.0, 1.0],
-        'easing': {
-            'p1': [0.5, 0.5],
-            'p2': [0.5, 0.5]
-        }
+        'range': [1.0, 0.0],
+        'easing': 'OutSine'
     }
 }
 
 
-def __palette_param(option: dict):
-    palette_range = [option['range'][0] * 255, option['range'][1] * 255]
-    palette = cubic_bezier(
-        np.asarray(option['easing']['p1']),
-        np.asarray(option['easing']['p2'])
-    )
-    palette = min_max_normalize(
-        palette,
-        palette_range[0],
-        palette_range[1])
-    print(type(palette))
-    return palette.astype(np.uint8)
-
-
-@jit('void(i8[:,:],i8[:],i8[:],i8[:])', nopython=True)
-def __create_palette_vec(palette, h, s, b):
-    for i in range(palette.shape[0]):
-        palette[i] = (h[i], s[i], b[i])
-
-
 def create_palette(option: dict=__default):
-    h = __palette_param(option.get('hue', __default['hue']))
-    s = __palette_param(option.get('saturation', __default['saturation']))
-    b = __palette_param(option.get('brightness', __default['brightness']))
-    palette = np.asarray(np.zeros((256, 3))).astype(np.uint8)
-    print(type(palette))
-    __create_palette_vec(palette, h, s, b)
-    return palette
+    hue = option.get('hue', __default['hue'])
+    saturation = option.get('saturation', __default['saturation'])
+    brightness = option.get('brightness', __default['brightness'])
+    palette = np.zeros((256, 3))
+    for i in range(256):
+        h = Easing.Calc(
+            hue['easing'], i, 256,
+            255 * hue['range'][0], 255 * hue['range'][1])
+        s = Easing.Calc(
+            saturation['easing'], i, 256,
+            255 * saturation['range'][0], 255 * saturation['range'][1])
+        b = Easing.Calc(
+            brightness['easing'], i, 256,
+            255 * brightness['range'][0], 255 * brightness['range'][1])
+        palette[i] = (h, s, b)
+    return palette.astype(np.uint8)
 
 
 # ------------------------------------ #
@@ -191,7 +312,7 @@ def to_qpixmap(image):
 
 if __name__ == '__main__':
     _, _, data = julia_set(
-        -1.5, 1.5, -1.5, 1.5, -0.3, -0.63, 400, 256
+        -1.5, 1.5, -1.5, 1.5, -0.3, -0.63, 2000, 512
     )
 
     palette = create_palette()
