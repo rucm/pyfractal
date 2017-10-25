@@ -1,9 +1,42 @@
 
-GridLayout:
-    cols: 3
+MainScreen:
+
+<MainScreen>:
+    cols: 2
+    display: display
+    Display:
+        id: display
+        size_hint: 4.0, 3.0
+    ColorPanel:
+        size_hint: 1.0, 1.0
+    FractalPanel:
+        size_hint: 1.0, 1.0
+    ControlPanel:
+        size_hint: 1.0, 1.0
+
+<Display@Widget>:
+
+<ColorPanel@BoxLayout>:
+    orientation: 'vertical'
     Button:
-        text: "T"
+        text: 'Hue'
     Button:
-        text: "S"
+        text: 'Saturation'
     Button:
-        text: "T"
+        text: 'Brightness'
+
+<FractalPanel@Widget>:
+    canvas.before:
+        Color:
+            rgba: [1, 1, 0, 1]
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+<ControlPanel@Widget>:
+    canvas.before:
+        Color:
+            rgba: [0, 0, 1, 1]
+        Rectangle:
+            size: self.size
+            pos: self.pos

@@ -220,11 +220,11 @@ class Easing(object):
     @staticmethod
     def OutCirc(t: float, total: float, mx: float, mn: float):
         dif = mx - mn
-        _t = t / total
+        _t = t / total - 1
         return dif * np.sqrt(1 - _t * _t) + mn
 
     @staticmethod
-    def InOutQuint(t: float, total: float, mx: float, mn: float):
+    def InOutCirc(t: float, total: float, mx: float, mn: float):
         dif = mx - mn
         _t = t / total
         if _t / 2 < 1:
