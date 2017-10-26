@@ -1,49 +1,117 @@
 from kivy.app import App
 from kivy.uix.gridlayout import GridLayout
+from kivy.uix.boxlayout import BoxLayout
 from kivy.graphics import Rectangle
 from kivy.graphics.texture import Texture
-from kivy.app import ObjectProperty
-import numpy as np
+from kivy.properties import ObjectProperty, StringProperty, NumericProperty
 import fractal
+
+import kivy.resources
+import kivy.garden
+import os
+import sys
+
+
+def resourcePath():
+    '''Returns path containing content - either locally or in pyinstaller tmp file'''
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS)
+
+    return os.path.join(os.path.abspath("."))
+
+
+kivy.resources.resource_add_path(resourcePath())
+kivy.garden.garden_system_dir = 'garden'
+
+
+from kivy.garden.graph import Graph, MeshLinePlot
+
+
+class Display(BoxLayout):
+
+    def create_data(self):
+        _, _, self.data = fractal.julia_set(
+            -1.5, 1.5, -1.5, 1.5, -0.3, -0.63, 2000, 512
+        )
+        palette = fractal.create_palette()
+        self.update_image(palette)
+
+    def update_image(self, palette):
+        image = fractal.create_image(self.data, palette)
+        self.scene.texture = Texture.create(size=image.size)
+        self.scene.texture.blit_buffer(image.tobytes())
+        self.scene.texture.flip_vertical()
+        # self.scene.texture = texture
+        # self.scene.opacity = 1
+
+
+class ColorContent(BoxLayout):
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.values = [
+            'Fixed', 'Linear',
+            'InQuad', 'OutQuad', 'InOutQuad', 'InCubic', 'OutCubic',
+            'InOutCubic', 'InQuart', 'OutQuart', 'InOutQuart', 'InQuint',
+            'OutQuint', 'InOutQuint', 'InSine', 'OutSine', 'InOutSine',
+            'InExp', 'OutExp', 'InOutExp'
+        ]
+
+    def output(self):
+        result = {
+            'range': [self.begin, self.end],
+            'easing': self.easing
+        }
+        return result
+
+    def change_easing(self, value):
+        if value == 'Fixed':
+            self.end_slider.disabled = True
+        else:
+            self.end_slider.disabled = False
+        self.easing = value
+        self.parent.update()
+
+    def change_begin(self, value):
+        self.begin = value
+        self.parent.update()
+
+    def change_end(self, value):
+        self.end = value
+        self.parent.update()
+
+
+class ColorPanel(BoxLayout):
+    hue = ObjectProperty(None)
+    saturation = ObjectProperty(None)
+    brightness = ObjectProperty(None)
+    palette_image = ObjectProperty(None)
+
+    def update(self):
+        self.palette = fractal.create_palette({
+            'hue': self.hue.output(),
+            'saturation': self.saturation.output(),
+            'brightness': self.brightness.output()
+        })
+        image = fractal.image_palette(self.palette)
+        self.palette_image.texture = Texture.create(size=image.size)
+        self.palette_image.texture.blit_buffer(image.tobytes())
+        self.palette_image.texture.flip_vertical()
+
+    def apply(self):
+        self.parent.update_image()
 
 
 class MainScreen(GridLayout):
     display = ObjectProperty(None)
+    color_panel = ObjectProperty(None)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        _, _, data = fractal.julia_set(
-            -1.5, 1.5, -1.5, 1.5, -0.3, -0.63, 2000, 512
-        )
-        palette = fractal.create_palette()
-        data = fractal.min_max_normalize(data, 0, 255).astype(np.uint8)
-        image = fractal.create_image(data, palette)
-        texture = Texture.create(size=image.size)
-        texture.blit_buffer(image.tobytes())
-        texture.flip_vertical()
+        self.display.create_data()
 
-        image.save('julia.png', 'PNG')
-        print(self.display.size)
-
-        with self.display.canvas:
-            Rectangle(
-                texture=texture,
-                pos=self.display.pos,
-                size=self.display.size)
-
-
-class SetGraph(GridLayout):
-    view = ObjectProperty(None)
-
-    def click(self):
-        data = []
-        for i in range(256):
-            data.append((
-                i,
-                fractal.Easing.Calc('InCirc', i, 256, 255, 0)))
-        plot = MeshLinePlot(color=[1, 0, 0, 1])
-        plot.points = data
-        self.view.add_plot(plot)
+    def update_image(self):
+        self.display.update_image(self.color_panel.palette)
 
 
 class FractalViewerApp(App):
@@ -51,10 +119,7 @@ class FractalViewerApp(App):
 
 
 if __name__ == '__main__':
-    import kivy.garden
-    kivy.garden.garden_system_dir = 'garden'
     from kivy.config import Config
-    from kivy.garden.graph import Graph, MeshLinePlot
     Config.set('graphics', 'width', 1024)
     Config.set('graphics', 'height', 768)
     FractalViewerApp().run()

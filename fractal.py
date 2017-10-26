@@ -35,6 +35,7 @@ def mandelbrot_set(xmin, xmax, ymin, ymax, size, steps):
     r2 = np.linspace(ymin, ymax, size, dtype='f8')
     c = r1 + r2[:, None] * 1j
     n = __mandelbrot_numpy(c, steps)
+    n = min_max_normalize(n, 0, 255).astype(np.uint8)
     return r1, r2, n
 
 
@@ -71,6 +72,7 @@ def julia_set(xmin, xmax, ymin, ymax, cx, cy, size, steps):
     r2 = np.linspace(ymin, ymax, size, dtype='f8')
     z = r1 + r2[:, None] * 1j
     n = __julia_numpy(z, cx + cy * 1j, steps)
+    n = min_max_normalize(n, 0, 255).astype(np.uint8)
     return r1, r2, n
 
 
@@ -84,6 +86,10 @@ class Easing(object):
     @staticmethod
     def Calc(name: str, t: float, total: float, mx: float, mn: float):
         return getattr(Easing, name)(t, total, mx, mn)
+
+    @staticmethod
+    def Fixed(t: float, total: float, mx: float, mn: float):
+        return mx
 
     @staticmethod
     def InQuad(t: float, total: float, mx: float, mn: float):
@@ -115,7 +121,7 @@ class Easing(object):
     @staticmethod
     def OutCubic(t: float, total: float, mx: float, mn: float):
         dif = mx - mn
-        _t = t / total
+        _t = t / total - 1
         return dif * (_t * _t * _t + 1) + mn
 
     @staticmethod
@@ -301,6 +307,14 @@ def __apply_palette(data, palette, output):
 def create_image(data, palette):
     image = __apply_palette(data, palette)
     image = Image.fromarray(np.uint8(image), mode='HSV')
+    return image.convert('RGB')
+
+
+def image_palette(palette):
+    data = np.zeros((50, 256, 3))
+    for i in range(data.shape[0]):
+        data[i] = palette
+    image = Image.fromarray(np.uint8(data), mode='HSV')
     return image.convert('RGB')
 
 
