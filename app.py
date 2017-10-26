@@ -6,25 +6,14 @@ from kivy.graphics.texture import Texture
 from kivy.properties import ObjectProperty, StringProperty, NumericProperty
 import fractal
 
-import kivy.resources
-import kivy.garden
-import os
-import sys
 
 
 def resourcePath():
-    '''Returns path containing content - either locally or in pyinstaller tmp file'''
+    import os
+    import sys
     if hasattr(sys, '_MEIPASS'):
         return os.path.join(sys._MEIPASS)
-
     return os.path.join(os.path.abspath("."))
-
-
-kivy.resources.resource_add_path(resourcePath())
-kivy.garden.garden_system_dir = 'garden'
-
-
-from kivy.garden.graph import Graph, MeshLinePlot
 
 
 class Display(BoxLayout):
@@ -119,7 +108,9 @@ class FractalViewerApp(App):
 
 
 if __name__ == '__main__':
+    import kivy.resources
     from kivy.config import Config
-    Config.set('graphics', 'width', 1024)
-    Config.set('graphics', 'height', 768)
+    Config.set('graphics', 'width', 1280)
+    Config.set('graphics', 'height', 720)
+    kivy.resources.resource_add_path(resourcePath())
     FractalViewerApp().run()

@@ -22,7 +22,7 @@ MainScreen:
     scene: _scene
     canvas.before:
         Color:
-            rgba: [0.5, 0.5, 0.5, 1]
+            rgba: [0.3, 0.3, 0.3, 1]
         Rectangle:
             size: self.size
             pos: self.pos
@@ -31,7 +31,52 @@ MainScreen:
         size_hint: None, None
         width: root.height
         height: root.height
-        pos_hint: {'center_x': .5, 'center_y': .5}
+        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
+<ColorPanel@BoxLayout>:
+    orientation: 'vertical'
+    padding: 10
+    spacing: 10
+    hue: _hue
+    saturation: _saturation
+    brightness: _brightness
+    palette_image: _palette_image
+    canvas.before:
+        Color:
+            rgba: [0.2, 0.2, 0.2, 1]
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    ColorContent:
+        size_hint_y: 4.0
+        id: _hue
+        title: 'Hue'
+        easing: 'OutSine'
+        begin: 0.2
+        end: 0.5
+    ColorContent:
+        size_hint_y: 4.0
+        id: _saturation
+        title: 'Saturation'
+        easing: 'Linear'
+        begin: 1.0
+        end: 1.0
+    ColorContent:
+        size_hint_y: 4.0
+        id: _brightness
+        title: 'Brightness'
+        easing: 'OutSine'
+        begin: 1.0
+        end: 0.0
+    Image:
+        size_hint_y: 1.0
+        id: _palette_image
+    Button:
+        size_hint_y: 1.0
+        size_hint_x: 0.8
+        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+        text: 'Apply'
+        on_release: root.apply()
 
 <ColorContent>:
     orientation: 'vertical'
@@ -76,44 +121,6 @@ MainScreen:
             max: 1.0
             value: root.end
             on_value: root.change_end(self.value)
-            disabled: True
-
-<ColorPanel@BoxLayout>:
-    orientation: 'vertical'
-    padding: 5
-    spacing: 5
-    hue: _hue
-    saturation: _saturation
-    brightness: _brightness
-    palette_image: _palette_image
-    ColorContent:
-        size_hint_y: 4.0
-        id: _hue
-        title: 'Hue'
-        easing: 'OutSine'
-        begin: 0.2
-        end: 0.5
-    ColorContent:
-        size_hint_y: 4.0
-        id: _saturation
-        title: 'Saturation'
-        easing: 'Linear'
-        begin: 1.0
-        end: 1.0
-    ColorContent:
-        size_hint_y: 4.0
-        id: _brightness
-        title: 'Brightness'
-        easing: 'OutSine'
-        begin: 1.0
-        end: 0.0
-    Image:
-        size_hint_y: 1.0
-        id: _palette_image
-    Button:
-        size_hint_y: 1.0
-        text: 'Apply'
-        on_release: root.apply()
 
 <FractalPanel@Widget>:
     canvas.before:
