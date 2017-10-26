@@ -311,7 +311,7 @@ def create_image(data, palette):
 
 
 def image_palette(palette):
-    data = np.zeros((50, 256, 3))
+    data = np.zeros((10, 256, 3))
     for i in range(data.shape[0]):
         data[i] = palette
     image = Image.fromarray(np.uint8(data), mode='HSV')

@@ -68,9 +68,14 @@ MainScreen:
         easing: 'OutSine'
         begin: 1.0
         end: 0.0
-    Image:
+    BoxLayout:
         size_hint_y: 1.0
-        id: _palette_image
+        Image:
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            size_hint: None, None
+            width: self.parent.width
+            height: self.parent.height
+            id: _palette_image
     Button:
         size_hint_y: 1.0
         size_hint_x: 0.8

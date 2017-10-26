@@ -30,8 +30,6 @@ class Display(BoxLayout):
         self.scene.texture = Texture.create(size=image.size)
         self.scene.texture.blit_buffer(image.tobytes())
         self.scene.texture.flip_vertical()
-        # self.scene.texture = texture
-        # self.scene.opacity = 1
 
 
 class ColorContent(BoxLayout):
@@ -46,7 +44,7 @@ class ColorContent(BoxLayout):
             'InExp', 'OutExp', 'InOutExp'
         ]
 
-    def output(self):
+    def to_dict(self):
         result = {
             'range': [self.begin, self.end],
             'easing': self.easing
@@ -78,9 +76,9 @@ class ColorPanel(BoxLayout):
 
     def update(self):
         self.palette = fractal.create_palette({
-            'hue': self.hue.output(),
-            'saturation': self.saturation.output(),
-            'brightness': self.brightness.output()
+            'hue': self.hue.to_dict(),
+            'saturation': self.saturation.to_dict(),
+            'brightness': self.brightness.to_dict()
         })
         image = fractal.image_palette(self.palette)
         self.palette_image.texture = Texture.create(size=image.size)
