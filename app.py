@@ -7,7 +7,6 @@ from kivy.properties import ObjectProperty, StringProperty, NumericProperty
 import fractal
 
 
-
 def resourcePath():
     import os
     import sys
@@ -20,7 +19,7 @@ class Display(BoxLayout):
 
     def create_data(self):
         _, _, self.data = fractal.julia_set(
-            -1.5, 1.5, -1.5, 1.5, -0.3, -0.63, 2000, 512
+            -1.5, 1.5, -1.5, 1.5, -0.3, -0.63, 800, 512
         )
         palette = fractal.create_palette()
         self.update_image(palette)
@@ -98,11 +97,16 @@ class MainScreen(GridLayout):
         self.display.create_data()
 
     def update_image(self):
-        self.display.update_image(self.color_panel.palette)
+        if self.color_panel is None:
+            self.display.update_image(fractal.create_palette())
+        else:
+            self.display.update_image(self.color_panel.palette)
 
 
 class FractalViewerApp(App):
-    pass
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
 
 if __name__ == '__main__':

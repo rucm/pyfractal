@@ -1,6 +1,4 @@
 
-MainScreen:
-
 <MainScreen>:
     cols: 2
     display: _display
@@ -68,17 +66,14 @@ MainScreen:
         easing: 'OutSine'
         begin: 1.0
         end: 0.0
-    BoxLayout:
+    Image:
         size_hint_y: 1.0
-        Image:
-            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-            size_hint: None, None
-            width: self.parent.width
-            height: self.parent.height
-            id: _palette_image
+        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+        id: _palette_image
+        allow_stretch: True
+        keep_ratio: False
     Button:
         size_hint_y: 1.0
-        size_hint_x: 0.8
         pos_hint: {'center_x': 0.5, 'center_y': 0.5}
         text: 'Apply'
         on_release: root.apply()
@@ -142,3 +137,6 @@ MainScreen:
         Rectangle:
             size: self.size
             pos: self.pos
+
+
+MainScreen:
