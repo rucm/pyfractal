@@ -84,6 +84,13 @@ def julia_set(xmin, xmax, ymin, ymax, cx, cy, size, steps):
 class Easing(object):
 
     @staticmethod
+    def MethodList():
+        import re
+        list = dir(Easing())
+        r = re.compile('(Fixed|Linear|In|Out)')
+        return [x for x in list if r.match(x)]
+
+    @staticmethod
     def Calc(name: str, t: float, total: float, mx: float, mn: float):
         return getattr(Easing, name)(t, total, mx, mn)
 

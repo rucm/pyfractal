@@ -3,6 +3,7 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.graphics import Rectangle
 from kivy.graphics.texture import Texture
+from kivy.clock import Clock
 from kivy.properties import ObjectProperty, StringProperty, NumericProperty
 import fractal
 
@@ -19,7 +20,7 @@ class Display(BoxLayout):
 
     def create_data(self):
         _, _, self.data = fractal.julia_set(
-            -1.5, 1.5, -1.5, 1.5, -0.3, -0.63, 800, 512
+            -1.5, 1.5, -1.5, 1.5, -0.3, -0.63, 800, 800
         )
         palette = fractal.create_palette()
         self.update_image(palette)
@@ -35,13 +36,7 @@ class ColorContent(BoxLayout):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.values = [
-            'Fixed', 'Linear',
-            'InQuad', 'OutQuad', 'InOutQuad', 'InCubic', 'OutCubic',
-            'InOutCubic', 'InQuart', 'OutQuart', 'InOutQuart', 'InQuint',
-            'OutQuint', 'InOutQuint', 'InSine', 'OutSine', 'InOutSine',
-            'InExp', 'OutExp', 'InOutExp'
-        ]
+        self.values = fractal.Easing.MethodList()
 
     def to_dict(self):
         result = {
@@ -72,7 +67,6 @@ class ColorPanel(BoxLayout):
     saturation = ObjectProperty(None)
     brightness = ObjectProperty(None)
     palette_image = ObjectProperty(None)
-    count = 0
 
     def update(self):
         self.palette = fractal.create_palette({
@@ -84,8 +78,7 @@ class ColorPanel(BoxLayout):
         self.palette_image.texture = Texture.create(size=image.size)
         self.palette_image.texture.blit_buffer(image.tobytes())
         self.palette_image.texture.flip_vertical()
-        print(self.count)
-        self.count += 1
+        Clock.schedule_once(lambda dt: self.parent.update_image())
 
     def apply(self):
         self.parent.update_image()
@@ -110,8 +103,8 @@ class FractalViewerApp(App):
 
 
 if __name__ == '__main__':
-    import kivy.resources
     from kivy.config import Config
+    import kivy.resources
     Config.set('graphics', 'width', 1280)
     Config.set('graphics', 'height', 720)
     kivy.resources.resource_add_path(resourcePath())
