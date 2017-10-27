@@ -72,6 +72,7 @@ class ColorPanel(BoxLayout):
     saturation = ObjectProperty(None)
     brightness = ObjectProperty(None)
     palette_image = ObjectProperty(None)
+    count = 0
 
     def update(self):
         self.palette = fractal.create_palette({
@@ -79,10 +80,12 @@ class ColorPanel(BoxLayout):
             'saturation': self.saturation.to_dict(),
             'brightness': self.brightness.to_dict()
         })
-        image = fractal.image_palette(self.palette)
+        image = fractal.image_of_palette(self.palette)
         self.palette_image.texture = Texture.create(size=image.size)
         self.palette_image.texture.blit_buffer(image.tobytes())
         self.palette_image.texture.flip_vertical()
+        print(self.count)
+        self.count += 1
 
     def apply(self):
         self.parent.update_image()
@@ -97,16 +100,13 @@ class MainScreen(GridLayout):
         self.display.create_data()
 
     def update_image(self):
-        if self.color_panel is None:
-            self.display.update_image(fractal.create_palette())
-        else:
-            self.display.update_image(self.color_panel.palette)
+        self.display.update_image(self.color_panel.palette)
 
 
 class FractalViewerApp(App):
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def build(self):
+        return MainScreen()
 
 
 if __name__ == '__main__':
