@@ -102,7 +102,7 @@ class Easing(object):
     def InQuad(t: float, total: float, mx: float, mn: float):
         dif = mx - mn
         _t = t / total
-        return -dif * _t * _t + mn
+        return dif * _t * _t + mn
 
     @staticmethod
     def OutQuad(t: float, total: float, mx: float, mn: float):
@@ -149,7 +149,7 @@ class Easing(object):
     @staticmethod
     def OutQuart(t: float, total: float, mx: float, mn: float):
         dif = mx - mn
-        _t = t / total
+        _t = t / total - 1
         return -dif * (_t * _t * _t * _t - 1) + mn
 
     @staticmethod
@@ -159,7 +159,7 @@ class Easing(object):
         if _t / 2 < 1:
             return dif / 2 * _t * _t * _t * _t + mn
         _t -= 2
-        return dif / 2 * (_t * _t * _t * _t - 2) + mn
+        return -dif / 2 * (_t * _t * _t * _t - 2) + mn
 
     @staticmethod
     def InQuint(t: float, total: float, mx: float, mn: float):

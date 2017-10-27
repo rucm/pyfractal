@@ -85,6 +85,15 @@ class ControlPanel(BoxLayout):
         super().__init__(**kwargs)
         self.values = ['julia', 'mandelbrot']
 
+    def change_fractal_type(self, text):
+        self.fractal_type = text
+
+    def change_cx(self, text):
+        self.cx = float(text)
+
+    def change_cy(self, text):
+        self.cy = float(text)
+
 
 class MainScreen(BoxLayout):
     display = ObjectProperty(None)

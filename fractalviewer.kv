@@ -135,6 +135,7 @@
     cy: -0.63
     image_size: 800
     steps: 800
+    scale: 1.0
     canvas.before:
         Color:
             rgba: [0.2, 0.2, 0.2, 1]
@@ -153,9 +154,10 @@
         Spinner:
             text: root.fractal_type
             values: root.values
+            on_text: root.change_fractal_type(self.text)
     BoxLayout:
         orientation: 'vertical'
-        size_hint_y: 2.0
+        size_hint_y: 1.5
         spacing: 10
         Label:
             font_size: root.width * 0.1
@@ -178,7 +180,7 @@
                 multiline: False
     BoxLayout:
         orientation: 'vertical'
-        size_hint_y: 2.0
+        size_hint_y: 1.5
         spacing: 10
         Label:
             font_size: root.width * 0.1
@@ -194,12 +196,14 @@
                 size_hint_x: 4.0
                 text: '{:09.2e}'.format(root.cx)
                 multiline: False
+                on_text_validate: root.change_cx(self.text)
                 disabled: root.fractal_type == 'mandelbrot'
             Label:
                 text: 'cy'
             TextInput:
                 text: '{:09.2e}'.format(root.cy)
                 multiline: False
+                on_text_validate: root.change_cy(self.text)
                 disabled: root.fractal_type == 'mandelbrot'
     BoxLayout:
         orientation: 'vertical'
@@ -227,11 +231,21 @@
             multiline: False
     BoxLayout:
         orientation: 'vertical'
-        size_hint_y: 2.0
+        size_hint_y: 1.0
+        spacing: 10
+        Label:
+            font_size: root.width * 0.1
+            text_size: self.size
+            halign: 'left'
+            text: 'Scale'
+        TextInput:
+            text: '{}'.format(root.scale)
+            multiline: False
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint_y: 1.5
         spacing: 10
         Button:
             text: 'Run'
         Button:
             text: 'Save'
-
-<Spacer@Widget>:
