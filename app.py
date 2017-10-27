@@ -20,8 +20,7 @@ class Display(BoxLayout):
 
     def create_data(self):
         _, _, self.data = fractal.julia_set(
-            -1.5, 1.5, -1.5, 1.5, -0.3, -0.63, 800, 800
-        )
+            -1.5, 1.5, -1.5, 1.5, -0.3, -0.63, 800, 800)
         palette = fractal.create_palette()
         self.update_image(palette)
 
@@ -46,10 +45,6 @@ class ColorContent(BoxLayout):
         return result
 
     def change_easing(self, value):
-        if value == 'Fixed':
-            self.end_slider.disabled = True
-        else:
-            self.end_slider.disabled = False
         self.easing = value
         self.parent.update()
 
@@ -84,7 +79,7 @@ class ColorPanel(BoxLayout):
         self.parent.update_image()
 
 
-class MainScreen(GridLayout):
+class MainScreen(BoxLayout):
     display = ObjectProperty(None)
     color_panel = ObjectProperty(None)
 

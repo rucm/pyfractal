@@ -263,16 +263,16 @@ def min_max_normalize(data, m=0, M=1, axis=None):
 
 __default = {
     'hue': {
-        'range': [0.2, 0.5],
-        'easing': 'OutSine'
+        'range': [0.2, 1.0],
+        'easing': 'OutExp'
     },
     'saturation': {
-        'range': [1.0, 1.0],
-        'easing': 'Linear'
+        'range': [1.0, 0.0],
+        'easing': 'OutExp'
     },
     'brightness': {
         'range': [1.0, 0.0],
-        'easing': 'OutSine'
+        'easing': 'Fixed'
     }
 }
 
@@ -324,18 +324,12 @@ def image_of_palette(palette):
     return image.convert('RGB')
 
 
-def to_qpixmap(image):
-    from PIL import ImageQt
-    img = image.convert('RGB')
-    return ImageQt.toqpixmap(img)
-
-
 if __name__ == '__main__':
     _, _, data = julia_set(
-        -1.5, 1.5, -1.5, 1.5, -0.3, -0.63, 2000, 512
+        -1.5, 1.5, -1.5, 1.5, -0.3, -0.63, 4000, 1000
     )
 
     palette = create_palette()
     data = min_max_normalize(data, 0, 255).astype(np.uint8)
     image = create_image(data, palette)
-    image.save('test-julia.png', 'PNG')
+    image.save('julia.png', 'PNG')

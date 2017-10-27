@@ -1,18 +1,16 @@
 
 <MainScreen>:
-    cols: 2
+    orientation: 'horizontal'
     display: _display
     color_panel: _color_panel
+    ControlPanel:
+        size_hint_x: 1.0
     Display:
         id: _display
-        size_hint: 4.0, 3.0
+        size_hint_x: 4.0
     ColorPanel:
         id: _color_panel
-        size_hint: 1.0, 1.0
-    FractalPanel:
-        size_hint: 1.0, 1.0
-    ControlPanel:
-        size_hint: 1.0, 1.0
+        size_hint_x: 1.0
 
 <Display>:
     orientation: 'vertical'
@@ -25,10 +23,9 @@
             pos: self.pos
     Image:
         id: _scene
-        size_hint: None, None
-        width: root.height
-        height: root.height
+        size_hint: 1.0, 1.0
         pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+        allow_stretch: True
 
 <ColorPanel>:
     orientation: 'vertical'
@@ -45,37 +42,38 @@
             size: self.size
             pos: self.pos
     ColorContent:
-        size_hint_y: 4.0
+        size_hint_y: 5.0
         id: _hue
         title: 'Hue'
-        easing: 'OutSine'
+        easing: 'OutExp'
         begin: 0.2
-        end: 0.5
-    ColorContent:
-        size_hint_y: 4.0
-        id: _saturation
-        title: 'Saturation'
-        easing: 'Linear'
-        begin: 1.0
         end: 1.0
     ColorContent:
-        size_hint_y: 4.0
-        id: _brightness
-        title: 'Brightness'
-        easing: 'OutSine'
+        size_hint_y: 5.0
+        id: _saturation
+        title: 'Saturation'
+        easing: 'OutExp'
         begin: 1.0
         end: 0.0
+    ColorContent:
+        size_hint_y: 5.0
+        id: _brightness
+        title: 'Brightness'
+        easing: 'Fixed'
+        begin: 1.0
+        end: 0.0
+    Label:
+        size_hint_y: 1.0
+        font_size: self.height * 0.5
+        text_size: self.size
+        halign: 'left'
+        text: 'Color Palette'
     Image:
         size_hint_y: 1.0
         pos_hint: {'center_x': 0.5, 'center_y': 0.5}
         id: _palette_image
         allow_stretch: True
         keep_ratio: False
-    Button:
-        size_hint_y: 1.0
-        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-        text: 'Apply'
-        on_release: root.apply()
 
 <ColorContent>:
     orientation: 'vertical'
@@ -84,7 +82,6 @@
     easing: 'Fixed'
     begin: 1.0
     end: 0.0
-    end_slider: _end_slider
     Label:
         size_hint_y: 1.0
         font_size: self.height * 0.5
@@ -115,24 +112,16 @@
             text: 'end'
         Slider:
             size_hint_y: 1.0
-            id: _end_slider
             min: 0.0
             max: 1.0
             value: root.end
             on_value: root.change_end(self.value)
-
-<FractalPanel@Widget>:
-    canvas.before:
-        Color:
-            rgba: [1, 1, 0, 1]
-        Rectangle:
-            size: self.size
-            pos: self.pos
+            disabled: root.easing == 'Fixed'
 
 <ControlPanel@Widget>:
     canvas.before:
         Color:
-            rgba: [0, 0, 1, 1]
+            rgba: [0.2, 0.2, 0.2, 1]
         Rectangle:
             size: self.size
             pos: self.pos
