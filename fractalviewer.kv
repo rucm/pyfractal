@@ -41,6 +41,12 @@
         Rectangle:
             size: self.size
             pos: self.pos
+    Label:
+        size_hint_y: 1.0
+        font_size: root.width * 0.1
+        text_size: self.size
+        halign: 'left'
+        text: 'Coloring'
     ColorContent:
         size_hint_y: 5.0
         id: _hue
@@ -64,7 +70,7 @@
         end: 0.0
     Label:
         size_hint_y: 1.0
-        font_size: self.height * 0.5
+        font_size: root.width * 0.1
         text_size: self.size
         halign: 'left'
         text: 'Color Palette'
@@ -84,7 +90,7 @@
     end: 0.0
     Label:
         size_hint_y: 1.0
-        font_size: self.height * 0.5
+        font_size: root.width * 0.1
         text_size: self.size
         halign: 'left'
         text: root.title
@@ -118,10 +124,114 @@
             on_value: root.change_end(self.value)
             disabled: root.easing == 'Fixed'
 
-<ControlPanel@Widget>:
+<ControlPanel>:
+    orientation: 'vertical'
+    padding: 10
+    spacing: 10
+    fractal_type: 'julia'
+    x: 0.0
+    y: 0.0
+    cx: -0.3
+    cy: -0.63
+    image_size: 800
+    steps: 800
     canvas.before:
         Color:
             rgba: [0.2, 0.2, 0.2, 1]
         Rectangle:
             size: self.size
             pos: self.pos
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint_y: 1.0
+        spacing: 10
+        Label:
+            font_size: root.width * 0.1
+            text_size: self.size
+            halign: 'left'
+            text: 'Fractal Type'
+        Spinner:
+            text: root.fractal_type
+            values: root.values
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint_y: 2.0
+        spacing: 10
+        Label:
+            font_size: root.width * 0.1
+            text_size: self.size
+            halign: 'left'
+            text: 'Center Position'
+        GridLayout:
+            cols: 2
+            Label:
+                size_hint_x: 1.0
+                text: 'x'
+            TextInput:
+                size_hint_x: 4.0
+                text: '{:09.2e}'.format(root.x)
+                multiline: False
+            Label:
+                text: 'y'
+            TextInput:
+                text: '{:09.2e}'.format(root.y)
+                multiline: False
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint_y: 2.0
+        spacing: 10
+        Label:
+            font_size: root.width * 0.1
+            text_size: self.size
+            halign: 'left'
+            text: 'Constant'
+        GridLayout:
+            cols: 2
+            Label:
+                size_hint_x: 1.0
+                text: 'cx'
+            TextInput:
+                size_hint_x: 4.0
+                text: '{:09.2e}'.format(root.cx)
+                multiline: False
+                disabled: root.fractal_type == 'mandelbrot'
+            Label:
+                text: 'cy'
+            TextInput:
+                text: '{:09.2e}'.format(root.cy)
+                multiline: False
+                disabled: root.fractal_type == 'mandelbrot'
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint_y: 1.0
+        spacing: 10
+        Label:
+            font_size: root.width * 0.1
+            text_size: self.size
+            halign: 'left'
+            text: 'Image Size'
+        TextInput:
+            text: '{}'.format(root.image_size)
+            multiline: False
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint_y: 1.0
+        spacing: 10
+        Label:
+            font_size: root.width * 0.1
+            text_size: self.size
+            halign: 'left'
+            text: 'Steps'
+        TextInput:
+            text: '{}'.format(root.steps)
+            multiline: False
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint_y: 2.0
+        spacing: 10
+        Button:
+            text: 'Run'
+        Button:
+            text: 'Save'
+
+<Spacer@Widget>:

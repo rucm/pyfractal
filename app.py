@@ -79,6 +79,13 @@ class ColorPanel(BoxLayout):
         self.parent.update_image()
 
 
+class ControlPanel(BoxLayout):
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.values = ['julia', 'mandelbrot']
+
+
 class MainScreen(BoxLayout):
     display = ObjectProperty(None)
     color_panel = ObjectProperty(None)
