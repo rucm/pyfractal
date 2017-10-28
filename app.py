@@ -5,12 +5,13 @@ from kivy.graphics import Rectangle
 from kivy.graphics.texture import Texture
 from kivy.clock import Clock
 from kivy.properties import ObjectProperty, StringProperty, NumericProperty
+import time
+import os
+import sys
 import fractal
 
 
 def resourcePath():
-    import os
-    import sys
     if hasattr(sys, '_MEIPASS'):
         return os.path.join(sys._MEIPASS)
     return os.path.join(os.path.abspath("."))
@@ -65,6 +66,7 @@ class ColorPanel(BoxLayout):
 class ControlPanel(BoxLayout):
 
     def calculate(self):
+        start = time.time()
         xmin = -1.5 / self.scale.param + self.center_position.param_x
         xmax = 1.5 / self.scale.param + self.center_position.param_x
         ymin = -1.5 / self.scale.param + self.center_position.param_y
@@ -79,6 +81,8 @@ class ControlPanel(BoxLayout):
                 xmin, xmax, ymin, ymax,
                 self.image_size.param, self.steps.param)
         Clock.schedule_once(lambda dt: self.parent.update())
+        elapsed_time = time.time() - start
+        self.processing_time.param = elapsed_time
 
     def reset(self):
         Clock.schedule_once(lambda dt: self.parent.update())

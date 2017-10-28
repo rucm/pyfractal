@@ -298,6 +298,8 @@
     TextInput:
         size_hint_y: 1.5
         padding_y: (self.height - self.font_size) / 2
-        text: '{:.5f}s'.format(root.param)
+        text: '{:.5f}'.format(root.param)
         on_text_validate: root.param = float(self.text)
         multiline: False
+        readonly: True
+        is_focusable: False
