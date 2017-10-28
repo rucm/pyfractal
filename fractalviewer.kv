@@ -1,18 +1,21 @@
+#:import fractal fractal
 
-<MainScreen>:
+<FractalViewer>:
     orientation: 'horizontal'
-    display: _display
+    control_panel: _control_panel
+    view_panel: _view_panel
     color_panel: _color_panel
     ControlPanel:
+        id: _control_panel
         size_hint_x: 1.0
-    Display:
-        id: _display
+    ViewPanel:
+        id: _view_panel
         size_hint_x: 4.0
     ColorPanel:
         id: _color_panel
         size_hint_x: 1.0
 
-<Display>:
+<ViewPanel>:
     orientation: 'vertical'
     scene: _scene
     canvas.before:
@@ -41,12 +44,6 @@
         Rectangle:
             size: self.size
             pos: self.pos
-    Label:
-        size_hint_y: 1.0
-        font_size: root.width * 0.1
-        text_size: self.size
-        halign: 'left'
-        text: 'Coloring'
     ColorContent:
         size_hint_y: 5.0
         id: _hue
@@ -68,20 +65,22 @@
         easing: 'Fixed'
         begin: 1.0
         end: 0.0
-    Label:
-        size_hint_y: 1.0
-        font_size: root.width * 0.1
-        text_size: self.size
-        halign: 'left'
-        text: 'Color Palette'
-    Image:
-        size_hint_y: 1.0
-        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-        id: _palette_image
-        allow_stretch: True
-        keep_ratio: False
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint_y: 1.5
+        spacing: 10
+        Label:
+            font_size: root.width * 0.1
+            text_size: self.size
+            halign: 'left'
+            text: 'Color Palette'
+        Image:
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            id: _palette_image
+            allow_stretch: True
+            keep_ratio: False
 
-<ColorContent>:
+<ColorContent@BoxLayout>:
     orientation: 'vertical'
     spacing: 10
     title: ''
@@ -99,29 +98,38 @@
         cols: 2
         Label:
             size_hint_x: 1.0
+            size_hint_y: 1.0
+            font_size: root.width * 0.1
             text: 'easing'
         Spinner:
-            size_hint_x: 3.0
-            size_hint_y: 1.0
+            size_hint_x: 2.0
             text: root.easing
-            values: root.values
-            on_text: root.change_easing(self.text)
+            values: fractal.Easing.MethodList()
+            on_text:
+                root.easing = self.text
+                root.parent.update()
         Label:
+            size_hint_y: 1.5
+            font_size: root.width * 0.1
             text: 'begin'
         Slider:
-            size_hint_y: 1.0
             min: 0.0
             max: 1.0
             value: root.begin
-            on_value: root.change_begin(self.value)
+            on_value:
+                root.begin = self.value
+                root.parent.update()
         Label:
+            size_hint_y: 1.5
+            font_size: root.width * 0.1
             text: 'end'
         Slider:
-            size_hint_y: 1.0
             min: 0.0
             max: 1.0
             value: root.end
-            on_value: root.change_end(self.value)
+            on_value:
+                root.end = self.value
+                root.parent.update()
             disabled: root.easing == 'Fixed'
 
 <ControlPanel>:
@@ -129,13 +137,12 @@
     padding: 10
     spacing: 10
     fractal_type: 'julia'
-    x: 0.0
-    y: 0.0
-    cx: -0.3
-    cy: -0.63
-    image_size: 800
-    steps: 800
-    scale: 1.0
+    center_position: _center_position
+    constant: _constant
+    image_size: _image_size
+    steps: _steps
+    scale: _scale
+    processing_time: _processing_time
     canvas.before:
         Color:
             rgba: [0.2, 0.2, 0.2, 1]
@@ -147,105 +154,150 @@
         size_hint_y: 1.0
         spacing: 10
         Label:
+            size_hint_y: 1.0
             font_size: root.width * 0.1
             text_size: self.size
             halign: 'left'
             text: 'Fractal Type'
         Spinner:
+            size_hint_y: 1.5
             text: root.fractal_type
-            values: root.values
-            on_text: root.change_fractal_type(self.text)
-    BoxLayout:
-        orientation: 'vertical'
-        size_hint_y: 1.5
-        spacing: 10
-        Label:
-            font_size: root.width * 0.1
-            text_size: self.size
-            halign: 'left'
-            text: 'Center Position'
-        GridLayout:
-            cols: 2
-            Label:
-                size_hint_x: 1.0
-                text: 'x'
-            TextInput:
-                size_hint_x: 4.0
-                text: '{:09.2e}'.format(root.x)
-                multiline: False
-            Label:
-                text: 'y'
-            TextInput:
-                text: '{:09.2e}'.format(root.y)
-                multiline: False
-    BoxLayout:
-        orientation: 'vertical'
-        size_hint_y: 1.5
-        spacing: 10
-        Label:
-            font_size: root.width * 0.1
-            text_size: self.size
-            halign: 'left'
-            text: 'Constant'
-        GridLayout:
-            cols: 2
-            Label:
-                size_hint_x: 1.0
-                text: 'cx'
-            TextInput:
-                size_hint_x: 4.0
-                text: '{:09.2e}'.format(root.cx)
-                multiline: False
-                on_text_validate: root.change_cx(self.text)
-                disabled: root.fractal_type == 'mandelbrot'
-            Label:
-                text: 'cy'
-            TextInput:
-                text: '{:09.2e}'.format(root.cy)
-                multiline: False
-                on_text_validate: root.change_cy(self.text)
-                disabled: root.fractal_type == 'mandelbrot'
-    BoxLayout:
-        orientation: 'vertical'
+            values: ['julia', 'mandelbrot']
+            on_text: root.fractal_type = self.text
+    Coordinate:
+        id: _center_position
+        size_hint_y: 2.0
+        title: 'Center Position'
+        param_x: 0.0
+        param_y: 0.0
+    Coordinate:
+        id: _constant
+        size_hint_y: 2.0
+        title: 'Constant'
+        param_x: 0.0
+        param_y: 0.0
+        disabled: root.fractal_type == 'mandelbrot'
+    IntegerParameter:
+        id: _image_size
         size_hint_y: 1.0
-        spacing: 10
-        Label:
-            font_size: root.width * 0.1
-            text_size: self.size
-            halign: 'left'
-            text: 'Image Size'
-        TextInput:
-            text: '{}'.format(root.image_size)
-            multiline: False
-    BoxLayout:
-        orientation: 'vertical'
+        title: 'Image Size'
+        param: 0
+    IntegerParameter:
+        id: _steps
         size_hint_y: 1.0
-        spacing: 10
-        Label:
-            font_size: root.width * 0.1
-            text_size: self.size
-            halign: 'left'
-            text: 'Steps'
-        TextInput:
-            text: '{}'.format(root.steps)
-            multiline: False
-    BoxLayout:
-        orientation: 'vertical'
+        title: 'Steps'
+        param: 0
+    FloatParameter:
+        id: _scale
         size_hint_y: 1.0
-        spacing: 10
-        Label:
-            font_size: root.width * 0.1
-            text_size: self.size
-            halign: 'left'
-            text: 'Scale'
-        TextInput:
-            text: '{}'.format(root.scale)
-            multiline: False
+        title: 'Scale'
+        param: 0
+    ProcessingTime:
+        id: _processing_time
+        size_hint_y: 1.0
+        param: 0
     BoxLayout:
         orientation: 'vertical'
-        size_hint_y: 1.5
+        size_hint_y: 2.0
         spacing: 10
         Button:
-            text: 'Run'
+            text: 'Calculate'
+            on_release: root.calculate()
+        Button:
+            text: 'Reset'
+            on_release: root.reset()
         Button:
             text: 'Save'
+            on_release: root.save()
+
+<Coordinate@BoxLayout>:
+    orientation: 'vertical'
+    spacing: 5
+    title: 'title'
+    param_x: 0.0
+    param_y: 0.0
+    Label:
+        size_hint_y: 1.0
+        font_size: root.width * 0.1
+        text_size: self.size
+
+        halign: 'left'
+        text: root.title
+    GridLayout:
+        size_hint_y: 2.0
+        cols: 2
+        spacing: 10
+        Label:
+            size_hint_x: 1.0
+            font_size: root.width * 0.1
+            text: 'x'
+        TextInput:
+            size_hint_x: 4.0
+            padding_y: (self.height - self.font_size) / 2
+            multiline: False
+            text: '{:9.3e}'.format(root.param_x)
+            on_text_validate: root.param_x = float(self.text)
+        Label:
+            size_hint_x: 1.0
+            font_size: root.width * 0.1
+            text: 'y'
+        TextInput:
+            size_hint_x: 4.0
+            padding_y: (self.height - self.font_size) / 2
+            multiline: False
+            text: '{:9.3e}'.format(root.param_y)
+            on_text_validate: root.param_y = float(self.text)
+
+<IntegerParameter@BoxLayout>:
+    title: 'title'
+    param: 0
+    orientation: 'vertical'
+    spacing: 5
+    Label:
+        size_hint_y: 1.0
+        font_size: root.width * 0.1
+        text_size: self.size
+        halign: 'left'
+        text: root.title
+    TextInput:
+        size_hint_y: 1.5
+        padding_y: (self.height - self.font_size) / 2
+        text: '{:0}'.format(root.param)
+        on_text_validate: root.param = int(self.text.split('.')[0])
+        multiline: False
+
+<FloatParameter@BoxLayout>:
+    title: 'title'
+    param: 0
+    orientation: 'vertical'
+    spacing: 5
+    Label:
+        size_hint_y: 1.0
+        font_size: root.width * 0.1
+        text_size: self.size
+        halign: 'left'
+        text: root.title
+    TextInput:
+        size_hint_y: 1.5
+        padding_y: (self.height - self.font_size) / 2
+        text: '{}'.format(root.param)
+        on_text_validate: root.param = float(self.text)
+        multiline: False
+
+<ProcessingTime@BoxLayout>:
+    title: 'Processing Time'
+    param: 0.0
+    orientation: 'vertical'
+    spacing: 5
+    Label:
+        size_hint_y: 1.0
+        font_size: root.width * 0.1
+        text_size: self.size
+        halign: 'left'
+        text: root.title
+    TextInput:
+        size_hint_y: 1.5
+        padding_y: (self.height - self.font_size) / 2
+        text: '{:.5f}s'.format(root.param)
+        on_text_validate: root.param = float(self.text)
+        multiline: False

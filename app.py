@@ -16,45 +16,23 @@ def resourcePath():
     return os.path.join(os.path.abspath("."))
 
 
-class Display(BoxLayout):
+class ViewPanel(BoxLayout):
+    scene = ObjectProperty(None)
 
     def create_data(self):
         _, _, self.data = fractal.julia_set(
-            -1.5, 1.5, -1.5, 1.5, -0.3, -0.63, 800, 800)
+            -1.5, 1.5, -1.5, 1.5, -0.3, -0.63, 800, 256)
         palette = fractal.create_palette()
-        self.update_image(palette)
+        self.apply_palette(palette)
 
-    def update_image(self, palette):
+    def set_data(self, data):
+        self.data = data
+
+    def apply_palette(self, palette):
         image = fractal.create_image(self.data, palette)
         self.scene.texture = Texture.create(size=image.size)
         self.scene.texture.blit_buffer(image.tobytes())
         self.scene.texture.flip_vertical()
-
-
-class ColorContent(BoxLayout):
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.values = fractal.Easing.MethodList()
-
-    def to_dict(self):
-        result = {
-            'range': [self.begin, self.end],
-            'easing': self.easing
-        }
-        return result
-
-    def change_easing(self, value):
-        self.easing = value
-        self.parent.update()
-
-    def change_begin(self, value):
-        self.begin = value
-        self.parent.update()
-
-    def change_end(self, value):
-        self.end = value
-        self.parent.update()
 
 
 class ColorPanel(BoxLayout):
@@ -65,58 +43,70 @@ class ColorPanel(BoxLayout):
 
     def update(self):
         self.palette = fractal.create_palette({
-            'hue': self.hue.to_dict(),
-            'saturation': self.saturation.to_dict(),
-            'brightness': self.brightness.to_dict()
+            'hue': {
+                'range': [
+                    self.hue.begin,
+                    self.hue.end
+                ],
+                'easing': self.hue.easing
+            },
+            'saturation': {
+                'range': [
+                    self.saturation.begin,
+                    self.saturation.end
+                ],
+                'easing': self.saturation.easing
+            },
+            'brightness': {
+                'range': [
+                    self.brightness.begin,
+                    self.brightness.end
+                ],
+                'easing': self.brightness.easing
+            }
         })
         image = fractal.image_of_palette(self.palette)
         self.palette_image.texture = Texture.create(size=image.size)
         self.palette_image.texture.blit_buffer(image.tobytes())
         self.palette_image.texture.flip_vertical()
-        Clock.schedule_once(lambda dt: self.parent.update_image())
-
-    def apply(self):
-        self.parent.update_image()
+        Clock.schedule_once(lambda dt: self.parent.update())
 
 
 class ControlPanel(BoxLayout):
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.values = ['julia', 'mandelbrot']
+    def calculate(self):
+        Clock.schedule_once(lambda dt: self.parent.update())
 
-    def change_fractal_type(self, text):
-        self.fractal_type = text
+    def reset(self):
+        Clock.schedule_once(lambda dt: self.parent.update())
 
-    def change_cx(self, text):
-        self.cx = float(text)
-
-    def change_cy(self, text):
-        self.cy = float(text)
+    def save(self):
+        Clock.schedule_once(lambda dt: self.parent.update())
 
 
-class MainScreen(BoxLayout):
-    display = ObjectProperty(None)
+class FractalViewer(BoxLayout):
+    view_panel = ObjectProperty(None)
+    control_panel = ObjectProperty(None)
     color_panel = ObjectProperty(None)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.display.create_data()
+        self.view_panel.create_data()
 
-    def update_image(self):
-        self.display.update_image(self.color_panel.palette)
+    def update(self):
+        self.view_panel.apply_palette(self.color_panel.palette)
 
 
 class FractalViewerApp(App):
 
     def build(self):
-        return MainScreen()
+        return FractalViewer()
 
 
 if __name__ == '__main__':
     from kivy.config import Config
     import kivy.resources
-    Config.set('graphics', 'width', 1280)
+    Config.set('graphics', 'width', 1080)
     Config.set('graphics', 'height', 720)
     kivy.resources.resource_add_path(resourcePath())
     FractalViewerApp().run()
