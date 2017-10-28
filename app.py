@@ -19,17 +19,7 @@ def resourcePath():
 class ViewPanel(BoxLayout):
     scene = ObjectProperty(None)
 
-    def create_data(self):
-        _, _, self.data = fractal.julia_set(
-            -1.5, 1.5, -1.5, 1.5, -0.3, -0.63, 800, 256)
-        palette = fractal.create_palette()
-        self.apply_palette(palette)
-
-    def set_data(self, data):
-        self.data = data
-
-    def apply_palette(self, palette):
-        image = fractal.create_image(self.data, palette)
+    def set_image(self, image):
         self.scene.texture = Texture.create(size=image.size)
         self.scene.texture.blit_buffer(image.tobytes())
         self.scene.texture.flip_vertical()
@@ -75,6 +65,19 @@ class ColorPanel(BoxLayout):
 class ControlPanel(BoxLayout):
 
     def calculate(self):
+        xmin = -1.5 / self.scale.param + self.center_position.param_x
+        xmax = 1.5 / self.scale.param + self.center_position.param_x
+        ymin = -1.5 / self.scale.param + self.center_position.param_y
+        ymax = 1.5 / self.scale.param + self.center_position.param_y
+        if self.fractal_type == 'julia':
+            _, _, self.data = fractal.julia_set(
+                xmin, xmax, ymin, ymax,
+                self.constant.param_x, self.constant.param_y,
+                self.image_size.param, self.steps.param)
+        elif self.fractal_type == 'mandelbrot':
+            _, _, self.data = fractal.mandelbrot_set(
+                xmin, xmax, ymin, ymax,
+                self.image_size.param, self.steps.param)
         Clock.schedule_once(lambda dt: self.parent.update())
 
     def reset(self):
@@ -91,10 +94,17 @@ class FractalViewer(BoxLayout):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.view_panel.create_data()
+        self.control_panel.calculate()
 
     def update(self):
-        self.view_panel.apply_palette(self.color_panel.palette)
+        if self.control_panel.data is None:
+            return
+        elif self.color_panel.palette is None:
+            return
+        image = fractal.create_image(
+            self.control_panel.data,
+            self.color_panel.palette)
+        self.view_panel.set_image(image)
 
 
 class FractalViewerApp(App):
