@@ -84,9 +84,6 @@ class ControlPanel(BoxLayout):
         elapsed_time = time.time() - start
         self.processing_time.param = elapsed_time
 
-    def reset(self):
-        Clock.schedule_once(lambda dt: self.parent.update())
-
     def save(self):
         Clock.schedule_once(lambda dt: self.parent.save())
 
