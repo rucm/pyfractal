@@ -88,7 +88,7 @@ class ControlPanel(BoxLayout):
         Clock.schedule_once(lambda dt: self.parent.update())
 
     def save(self):
-        Clock.schedule_once(lambda dt: self.parent.update())
+        Clock.schedule_once(lambda dt: self.parent.save())
 
 
 class FractalViewer(BoxLayout):
@@ -110,10 +110,29 @@ class FractalViewer(BoxLayout):
             self.color_panel.palette)
         self.view_panel.set_image(image)
 
+    def save(self):
+        if self.control_panel.data is None:
+            return
+        elif self.color_panel.palette is None:
+            return
+        image = fractal.create_image(
+            self.control_panel.data,
+            self.color_panel.palette)
+        fractal_type = self.control_panel.fractal_type
+        filename = '{}.png'.format(fractal_type)
+        index = 1
+        while os.path.isfile(filename):
+            filename = filename.split('.')
+            filename[0] = '{}({})'.format(fractal_type, index)
+            filename = '.'.join(filename)
+            index += 1
+        image.save(filename, 'PNG')
+
 
 class FractalViewerApp(App):
 
     def build(self):
+        self.icon = 'fractal.png'
         return FractalViewer()
 
 
