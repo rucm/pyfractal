@@ -29,6 +29,12 @@
         size_hint: 1.0, 1.0
         pos_hint: {'center_x': 0.5, 'center_y': 0.5}
         allow_stretch: True
+        RelativeLayout:
+            size: self.parent.size
+            pos: self.parent.pos
+            on_touch_down:
+                p = self.to_local(*args[1].pos)
+                print('relative: {}'.format(p))
 
 <ColorPanel>:
     orientation: 'vertical'
