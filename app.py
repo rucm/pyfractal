@@ -49,9 +49,6 @@ class FractalModel(object):
                 self.param.xmin, self.param.xmax, self.ymin, self.ymax,
                 self.param.image_size, self.param.steps)
 
-    def set_calc_area(self, center_x, center_y, scale):
-        pass
-
 
 class ViewPanel(BoxLayout):
     scene = ObjectProperty(None)
@@ -60,6 +57,9 @@ class ViewPanel(BoxLayout):
         self.scene.texture = Texture.create(size=image.size)
         self.scene.texture.blit_buffer(image.tobytes())
         self.scene.texture.flip_vertical()
+
+    def click_center(self, x, y):
+        print('{}, {}'.format(x, y))
 
 
 class ColorPanel(BoxLayout):

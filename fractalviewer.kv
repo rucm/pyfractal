@@ -31,9 +31,9 @@
         offset_x: (self.size[0] - self.norm_image_size[0]) / 2 + self.pos[0]
         offset_y: (self.size[1] - self.norm_image_size[1]) / 2 + self.pos[1]
         on_touch_down:
-            x = args[1].pos[0] - self.offset_x
-            y = args[1].pos[1] - self.offset_y
-            print('{}, {}'.format(x, y))
+            x = (args[1].pos[0] - self.offset_x) / self.norm_image_size[0]
+            y = (args[1].pos[1] - self.offset_y) / self.norm_image_size[1]
+            root.click_center(x, y)
 
 <ColorPanel>:
     orientation: 'vertical'
