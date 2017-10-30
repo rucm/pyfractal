@@ -1,13 +1,13 @@
 from kivy.app import App
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
-from kivy.graphics import Rectangle
 from kivy.graphics.texture import Texture
 from kivy.clock import Clock
 from kivy.properties import ObjectProperty, StringProperty, NumericProperty
 import time
 import os
 import sys
+import copy
 import fractal
 
 
@@ -15,6 +15,42 @@ def resourcePath():
     if hasattr(sys, '_MEIPASS'):
         return os.path.join(sys._MEIPASS)
     return os.path.join(os.path.abspath("."))
+
+
+class FractalParam(object):
+    fractal_type = 'julia'
+    xmin = -1.5
+    xmax = 1.5
+    ymin = -1.5
+    ymax = 1.5
+    cx = -0.3
+    cy = -0.63
+    image_size = 800
+    steps = 256
+    scale = 1.0
+
+
+class FractalModel(object):
+    default_param = FractalParam()
+    param = FractalParam()
+    data = None
+
+    def reset(self):
+        self.param = copy.deepcopy(self.default_param)
+
+    def calculate(self):
+        if self.param.fractal_type == 'julia':
+            _, _, self.data = fractal.julia_set(
+                self.param.xmin, self.param.xmax, self.ymin, self.ymax,
+                self.param.cx, self.param.cy,
+                self.param.image_size, self.param.steps)
+        elif self.param.fractal_type == 'mandelbrot':
+            _, _, self.data = fractal.mandelbrot_set(
+                self.param.xmin, self.param.xmax, self.ymin, self.ymax,
+                self.param.image_size, self.param.steps)
+
+    def set_calc_area(self, center_x, center_y, scale):
+        pass
 
 
 class ViewPanel(BoxLayout):
