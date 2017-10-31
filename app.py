@@ -7,7 +7,6 @@ from kivy.properties import ObjectProperty, StringProperty, NumericProperty
 import time
 import os
 import sys
-import copy
 import fractal
 
 
@@ -36,6 +35,7 @@ class FractalModel(object):
     data = None
 
     def reset(self):
+        import copy
         self.param = copy.deepcopy(self.default_param)
 
     def calculate(self):
@@ -58,7 +58,12 @@ class ViewPanel(BoxLayout):
         self.scene.texture.blit_buffer(image.tobytes())
         self.scene.texture.flip_vertical()
 
-    def click_center(self, x, y):
+    def touch_down(self, touch):
+        x, y = touch.pos[0], touch.pos[1]
+        if not self.collide_point(x, y) or touch.button != 'left':
+            return
+        x = (x - self.scene.offset_x) / self.scene.norm_image_size[0]
+        y = 1 - (y - self.scene.offset_y) / self.scene.norm_image_size[1]
         print('{}, {}'.format(x, y))
 
 
