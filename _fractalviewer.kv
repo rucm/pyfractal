@@ -2,10 +2,10 @@
 
 <FractalViewer>:
     orientation: 'horizontal'
-    fractal_panel: _control_panel
+    control_panel: _control_panel
     view_panel: _view_panel
     color_panel: _color_panel
-    FractalPanel:
+    ControlPanel:
         id: _control_panel
         size_hint_x: 1.0
     ViewPanel:
@@ -137,7 +137,7 @@
                 root.parent.update()
             disabled: root.easing == 'Fixed'
 
-<FractalPanel>:
+<ControlPanel>:
     orientation: 'vertical'
     padding: 10
     spacing: 10
@@ -265,7 +265,6 @@
         size_hint_y: 1.5
         padding_y: (self.height - self.font_size) / 2
         text: '{:0}'.format(root.param)
-        input_filter: 'int'
         on_text_validate: root.param = int(self.text.split('.')[0])
         multiline: False
 
@@ -283,8 +282,7 @@
     TextInput:
         size_hint_y: 1.5
         padding_y: (self.height - self.font_size) / 2
-        text: '{:0}'.format(root.param)
-        input_filter: 'float'
+        text: '{}'.format(root.param)
         on_text_validate: root.param = float(self.text)
         multiline: False
 

@@ -104,7 +104,7 @@ class ColorPanel(BoxLayout):
         Clock.schedule_once(lambda dt: self.parent.update())
 
 
-class ControlPanel(BoxLayout):
+class FractalPanel(BoxLayout):
 
     def calculate(self):
         start = time.time()
@@ -131,32 +131,32 @@ class ControlPanel(BoxLayout):
 
 class FractalViewer(BoxLayout):
     view_panel = ObjectProperty(None)
-    control_panel = ObjectProperty(None)
+    fractal_panel = ObjectProperty(None)
     color_panel = ObjectProperty(None)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.control_panel.calculate()
+        self.fractal_panel.calculate()
 
     def update(self):
-        if self.control_panel.data is None:
+        if self.fractal_panel.data is None:
             return
         elif self.color_panel.palette is None:
             return
         image = fractal.create_image(
-            self.control_panel.data,
+            self.fractal_panel.data,
             self.color_panel.palette)
         self.view_panel.set_image(image)
 
     def save(self):
-        if self.control_panel.data is None:
+        if self.fractal_panel.data is None:
             return
         elif self.color_panel.palette is None:
             return
         image = fractal.create_image(
-            self.control_panel.data,
+            self.fractal_panel.data,
             self.color_panel.palette)
-        fractal_type = self.control_panel.fractal_type
+        fractal_type = self.fractal_panel.fractal_type
         filename = '{}.png'.format(fractal_type)
         index = 1
         while os.path.isfile(filename):
