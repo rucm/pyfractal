@@ -30,8 +30,9 @@
         allow_stretch: True
         offset_x: (self.size[0] - self.norm_image_size[0]) / 2 + self.pos[0]
         offset_y: (self.size[1] - self.norm_image_size[1]) / 2 + self.pos[1]
-        on_touch_down:
-            root.touch_down(args[1])
+        on_touch_down: root.touch_down(args[1])
+        on_touch_move: root.touch_move(args[1])
+        on_touch_up: root.touch_up(args[1])
 
 <ColorPanel>:
     orientation: 'vertical'
@@ -78,8 +79,8 @@
     orientation: 'vertical'
     spacing: 10
     title: ''
-    easing: 'Fixed'
-    begin: 1.0
+    easing: ''
+    begin: 0.0
     end: 0.0
     Label:
         size_hint_y: 1.0
@@ -130,13 +131,12 @@
     orientation: 'vertical'
     padding: 10
     spacing: 10
-    fractal_type: 'julia'
+    fractal_type: ''
     center_pos: _center_pos
     constant: _constant
     image_size: _image_size
     steps: _steps
-    zoom_rate: _zoom_rate
-    mag_rate: _mag_rate
+    zoom: _zoom
     processing_time: _processing_time
     canvas.before:
         Color:
@@ -163,39 +163,26 @@
         id: _center_pos
         size_hint_y: 2.0
         title: 'Center Position'
-        param_x: 0.0
-        param_y: 0.0
     Coordinate:
         id: _constant
         size_hint_y: 2.0
         title: 'Constant'
-        param_x: -0.3
-        param_y: -0.63
         disabled: root.fractal_type != 'julia'
     IntegerParameter:
         id: _image_size
         size_hint_y: 1.0
         title: 'Image Size'
-        param: 800
     IntegerParameter:
         id: _steps
         size_hint_y: 1.0
         title: 'Steps'
-        param: 256
-    IntegerParameter:
-        id: _zoom_rate
+    FloatParameter:
+        id: _zoom
         size_hint_y: 1.0
-        title: 'Zoom Rate'
-        param: 1
-    IntegerParameter:
-        id: _mag_rate
-        size_hint_y: 1.0
-        title: 'Magnification Rate'
-        param: 1
+        title: 'Zoom'
     ProcessingTime:
         id: _processing_time
         size_hint_y: 1.0
-        param: 0
     BoxLayout:
         orientation: 'vertical'
         size_hint_y: 2.0
@@ -211,8 +198,7 @@
     orientation: 'vertical'
     spacing: 5
     title: 'title'
-    param_x: 0.0
-    param_y: 0.0
+    param: [0.0, 0.0]
     Label:
         size_hint_y: 1.0
         font_size: root.width * 0.1
@@ -231,8 +217,8 @@
             size_hint_x: 4.0
             padding_y: (self.height - self.font_size) / 2
             multiline: False
-            text: '{:9.3e}'.format(root.param_x)
-            on_text: root.param_x = float(self.text)
+            text: '{:9.3e}'.format(root.param[0])
+            on_text_validate: root.param[0] = float(self.text)
         Label:
             size_hint_x: 1.0
             font_size: root.width * 0.1
@@ -241,8 +227,8 @@
             size_hint_x: 4.0
             padding_y: (self.height - self.font_size) / 2
             multiline: False
-            text: '{:9.3e}'.format(root.param_y)
-            on_text: root.param_y = float(self.text)
+            text: '{:9.3e}'.format(root.param[1])
+            on_text_validate: root.param[1] = float(self.text)
 
 <IntegerParameter@BoxLayout>:
     title: 'title'
@@ -259,7 +245,8 @@
         size_hint_y: 1.5
         padding_y: (self.height - self.font_size) / 2
         text: '{:0}'.format(root.param)
-        on_text: root.param = int(self.text.split('.')[0])
+        on_text_validate: root.param = int(self.text)
+        input_filter: 'int'
         multiline: False
 
 <FloatParameter@BoxLayout>:
@@ -276,8 +263,9 @@
     TextInput:
         size_hint_y: 1.5
         padding_y: (self.height - self.font_size) / 2
-        text: '{}'.format(root.param)
-        on_text: root.param = float(self.text)
+        text: '{:0}'.format(root.param)
+        on_text_validate: root.param = float(self.text)
+        input_filter: 'float'
         multiline: False
 
 <ProcessingTime@BoxLayout>:

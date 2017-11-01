@@ -16,8 +16,7 @@ class FractalModel(object):
         self.constant = [-0.3, -0.63]
         self.size = 800
         self.steps = 256
-        self.zoom = 1
-        self.mag_rate = 1
+        self.zoom = 1.0
         self.hue = {'easing': 'OutExp', 'range': [0.2, 1.0]}
         self.saturation = {'easing': 'OutExp', 'range': [1.0, 0.0]}
         self.brightness = {'easing': 'Fixed', 'range': [1.0, 1.0]}
@@ -60,11 +59,9 @@ class FractalModel(object):
         self.brightness['range'] = [begin, end]
 
     def create_data(self):
-        x = self.center_pos[0]
-        y = self.center_pos[1]
-        _zoom = self.mag_rate * self.zoom
-        x_range = [-1.5 / _zoom + x, 1.5 / _zoom + x]
-        y_range = [-1.5 / _zoom + y, 1.5 / _zoom + y]
+        x, y = self.center_pos[0], self.center_pos[1]
+        x_range = [-1.5 / self.zoom + x, 1.5 / self.zoom + x]
+        y_range = [-1.5 / self.zoom + y, 1.5 / self.zoom + y]
         if self.fractal_type == 'julia':
             _, _, self.data = fractal.julia_set(
                 *x_range,
@@ -80,7 +77,6 @@ class FractalModel(object):
             )
         self.x_range = x_range
         self.y_range = y_range
-        self.mag_rate = _zoom
 
     def create_palette(self):
         self.palette = fractal.create_palette({
