@@ -99,6 +99,10 @@ class Easing(object):
         return mx
 
     @staticmethod
+    def Linear(t: float, total: float, mx: float, mn: float):
+        return (mx - mn) * t / total + mn
+
+    @staticmethod
     def InQuad(t: float, total: float, mx: float, mn: float):
         dif = mx - mn
         _t = t / total
@@ -245,10 +249,6 @@ class Easing(object):
         _t -= 2
         return dif / 2 * (np.sqrt(1 - _t * _t) + 1) + mn
 
-    @staticmethod
-    def Linear(t: float, total: float, mx: float, mn: float):
-        return (mx - mn) * t / total + mn
-
 
 # ------------------------------------ #
 # Utility                              #
@@ -332,4 +332,4 @@ if __name__ == '__main__':
     palette = create_palette()
     data = min_max_normalize(data, 0, 255).astype(np.uint8)
     image = create_image(data, palette)
-    image.save('julia.png', 'PNG')
+    image.save('julia.png')

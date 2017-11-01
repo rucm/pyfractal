@@ -2,11 +2,11 @@
 
 <FractalViewer>:
     orientation: 'horizontal'
-    fractal_panel: _control_panel
+    fractal_panel: _fractal_panel
     view_panel: _view_panel
     color_panel: _color_panel
     FractalPanel:
-        id: _control_panel
+        id: _fractal_panel
         size_hint_x: 1.0
     ViewPanel:
         id: _view_panel
@@ -32,8 +32,6 @@
         offset_y: (self.size[1] - self.norm_image_size[1]) / 2 + self.pos[1]
         on_touch_down:
             root.touch_down(args[1])
-        on_touch_move:
-            root.touch_down(args[1])
 
 <ColorPanel>:
     orientation: 'vertical'
@@ -53,23 +51,14 @@
         size_hint_y: 5.0
         id: _hue
         title: 'Hue'
-        easing: 'OutExp'
-        begin: 0.2
-        end: 1.0
     ColorContent:
         size_hint_y: 5.0
         id: _saturation
         title: 'Saturation'
-        easing: 'OutExp'
-        begin: 1.0
-        end: 0.0
     ColorContent:
         size_hint_y: 5.0
         id: _brightness
         title: 'Brightness'
-        easing: 'Fixed'
-        begin: 1.0
-        end: 0.0
     BoxLayout:
         orientation: 'vertical'
         size_hint_y: 1.5
@@ -112,7 +101,7 @@
             values: fractal.Easing.MethodList()
             on_text:
                 root.easing = self.text
-                root.parent.update()
+                root.parent.ctrl.update_color()
         Label:
             size_hint_y: 1.5
             font_size: root.width * 0.1
@@ -123,7 +112,7 @@
             value: root.begin
             on_value:
                 root.begin = self.value
-                root.parent.update()
+                root.parent.ctrl.update_color()
         Label:
             size_hint_y: 1.5
             font_size: root.width * 0.1
@@ -134,7 +123,7 @@
             value: root.end
             on_value:
                 root.end = self.value
-                root.parent.update()
+                root.parent.ctrl.update_color()
             disabled: root.easing == 'Fixed'
 
 <FractalPanel>:
@@ -142,11 +131,12 @@
     padding: 10
     spacing: 10
     fractal_type: 'julia'
-    center_position: _center_position
+    center_pos: _center_pos
     constant: _constant
     image_size: _image_size
     steps: _steps
-    scale: _scale
+    zoom_rate: _zoom_rate
+    mag_rate: _mag_rate
     processing_time: _processing_time
     canvas.before:
         Color:
@@ -157,7 +147,7 @@
     BoxLayout:
         orientation: 'vertical'
         size_hint_y: 1.0
-        spacing: 10
+        spacing: 5
         Label:
             size_hint_y: 1.0
             font_size: root.width * 0.1
@@ -170,7 +160,7 @@
             values: ['julia', 'mandelbrot']
             on_text: root.fractal_type = self.text
     Coordinate:
-        id: _center_position
+        id: _center_pos
         size_hint_y: 2.0
         title: 'Center Position'
         param_x: 0.0
@@ -181,7 +171,7 @@
         title: 'Constant'
         param_x: -0.3
         param_y: -0.63
-        disabled: root.fractal_type == 'mandelbrot'
+        disabled: root.fractal_type != 'julia'
     IntegerParameter:
         id: _image_size
         size_hint_y: 1.0
@@ -192,11 +182,16 @@
         size_hint_y: 1.0
         title: 'Steps'
         param: 256
-    FloatParameter:
-        id: _scale
+    IntegerParameter:
+        id: _zoom_rate
         size_hint_y: 1.0
-        title: 'Scale'
-        param: 1.0
+        title: 'Zoom Rate'
+        param: 1
+    IntegerParameter:
+        id: _mag_rate
+        size_hint_y: 1.0
+        title: 'Magnification Rate'
+        param: 1
     ProcessingTime:
         id: _processing_time
         size_hint_y: 1.0
@@ -207,10 +202,10 @@
         spacing: 10
         Button:
             text: 'Calculate'
-            on_release: root.calculate()
+            on_release: root.ctrl.calculate()
         Button:
             text: 'Save'
-            on_release: root.save()
+            on_release: root.ctrl.save()
 
 <Coordinate@BoxLayout>:
     orientation: 'vertical'
@@ -222,7 +217,6 @@
         size_hint_y: 1.0
         font_size: root.width * 0.1
         text_size: self.size
-
         halign: 'left'
         text: root.title
     GridLayout:
@@ -238,7 +232,7 @@
             padding_y: (self.height - self.font_size) / 2
             multiline: False
             text: '{:9.3e}'.format(root.param_x)
-            on_text_validate: root.param_x = float(self.text)
+            on_text: root.param_x = float(self.text)
         Label:
             size_hint_x: 1.0
             font_size: root.width * 0.1
@@ -248,7 +242,7 @@
             padding_y: (self.height - self.font_size) / 2
             multiline: False
             text: '{:9.3e}'.format(root.param_y)
-            on_text_validate: root.param_y = float(self.text)
+            on_text: root.param_y = float(self.text)
 
 <IntegerParameter@BoxLayout>:
     title: 'title'
@@ -265,8 +259,7 @@
         size_hint_y: 1.5
         padding_y: (self.height - self.font_size) / 2
         text: '{:0}'.format(root.param)
-        input_filter: 'int'
-        on_text_validate: root.param = int(self.text.split('.')[0])
+        on_text: root.param = int(self.text.split('.')[0])
         multiline: False
 
 <FloatParameter@BoxLayout>:
@@ -283,9 +276,8 @@
     TextInput:
         size_hint_y: 1.5
         padding_y: (self.height - self.font_size) / 2
-        text: '{:0}'.format(root.param)
-        input_filter: 'float'
-        on_text_validate: root.param = float(self.text)
+        text: '{}'.format(root.param)
+        on_text: root.param = float(self.text)
         multiline: False
 
 <ProcessingTime@BoxLayout>:
@@ -303,7 +295,7 @@
         size_hint_y: 1.5
         padding_y: (self.height - self.font_size) / 2
         text: '{:.5f}'.format(root.param)
-        on_text_validate: root.param = float(self.text)
+        on_text: root.param = float(self.text)
         multiline: False
         readonly: True
         is_focusable: False
