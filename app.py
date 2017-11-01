@@ -8,6 +8,7 @@ import time
 import os
 import sys
 import fractal
+from models import FractalModel
 
 
 def resourcePath():
@@ -16,42 +17,9 @@ def resourcePath():
     return os.path.join(os.path.abspath("."))
 
 
-class FractalParam(object):
-    fractal_type = 'julia'
-    xmin = -1.5
-    xmax = 1.5
-    ymin = -1.5
-    ymax = 1.5
-    cx = -0.3
-    cy = -0.63
-    image_size = 800
-    steps = 256
-    scale = 1.0
-
-
-class FractalModel(object):
-    default_param = FractalParam()
-    param = FractalParam()
-    data = None
-
-    def reset(self):
-        import copy
-        self.param = copy.deepcopy(self.default_param)
-
-    def calculate(self):
-        if self.param.fractal_type == 'julia':
-            _, _, self.data = fractal.julia_set(
-                self.param.xmin, self.param.xmax, self.ymin, self.ymax,
-                self.param.cx, self.param.cy,
-                self.param.image_size, self.param.steps)
-        elif self.param.fractal_type == 'mandelbrot':
-            _, _, self.data = fractal.mandelbrot_set(
-                self.param.xmin, self.param.xmax, self.ymin, self.ymax,
-                self.param.image_size, self.param.steps)
-
-
 class ViewPanel(BoxLayout):
-    scene = ObjectProperty(None)
+    ctrl = ObjectProperty()
+    scene = ObjectProperty()
 
     def set_image(self, image):
         self.scene.texture = Texture.create(size=image.size)
@@ -64,99 +32,115 @@ class ViewPanel(BoxLayout):
             return
         x = (x - self.scene.offset_x) / self.scene.norm_image_size[0]
         y = 1 - (y - self.scene.offset_y) / self.scene.norm_image_size[1]
-        print('{}, {}'.format(x, y))
+        self.ctrl.set_center(x, y)
 
 
 class ColorPanel(BoxLayout):
-    hue = ObjectProperty(None)
-    saturation = ObjectProperty(None)
-    brightness = ObjectProperty(None)
-    palette_image = ObjectProperty(None)
+    ctrl = ObjectProperty()
 
-    def update(self):
-        self.palette = fractal.create_palette({
-            'hue': {
-                'range': [
-                    self.hue.begin,
-                    self.hue.end
-                ],
-                'easing': self.hue.easing
-            },
-            'saturation': {
-                'range': [
-                    self.saturation.begin,
-                    self.saturation.end
-                ],
-                'easing': self.saturation.easing
-            },
-            'brightness': {
-                'range': [
-                    self.brightness.begin,
-                    self.brightness.end
-                ],
-                'easing': self.brightness.easing
-            }
-        })
-        image = fractal.image_of_palette(self.palette)
+    def set_palette(self, image):
         self.palette_image.texture = Texture.create(size=image.size)
         self.palette_image.texture.blit_buffer(image.tobytes())
         self.palette_image.texture.flip_vertical()
-        Clock.schedule_once(lambda dt: self.parent.update())
 
 
-class ControlPanel(BoxLayout):
+class FractalPanel(BoxLayout):
+    ctrl = ObjectProperty()
 
-    def calculate(self):
-        start = time.time()
-        xmin = -1.5 / self.scale.param + self.center_position.param_x
-        xmax = 1.5 / self.scale.param + self.center_position.param_x
-        ymin = -1.5 / self.scale.param + self.center_position.param_y
-        ymax = 1.5 / self.scale.param + self.center_position.param_y
-        if self.fractal_type == 'julia':
-            _, _, self.data = fractal.julia_set(
-                xmin, xmax, ymin, ymax,
-                self.constant.param_x, self.constant.param_y,
-                self.image_size.param, self.steps.param)
-        elif self.fractal_type == 'mandelbrot':
-            _, _, self.data = fractal.mandelbrot_set(
-                xmin, xmax, ymin, ymax,
-                self.image_size.param, self.steps.param)
-        Clock.schedule_once(lambda dt: self.parent.update())
-        elapsed_time = time.time() - start
-        self.processing_time.param = elapsed_time
+    def set_processing_time(self, t):
+        self.processing_time.param = t
 
-    def save(self):
-        Clock.schedule_once(lambda dt: self.parent.save())
+    def set_mag_rate(self, mr):
+        self.mag_rate.param = mr
 
 
 class FractalViewer(BoxLayout):
-    view_panel = ObjectProperty(None)
-    control_panel = ObjectProperty(None)
-    color_panel = ObjectProperty(None)
+    model = FractalModel()
+    disabled_calc = True
+
+    view_panel = ObjectProperty()
+    fractal_panel = ObjectProperty()
+    color_panel = ObjectProperty()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.control_panel.calculate()
+        self.view_panel.ctrl = self
+        self.fractal_panel.ctrl = self
+        self.color_panel.ctrl = self
+        self.initialize()
+        self.update_color()
+        self.calculate()
 
-    def update(self):
-        if self.control_panel.data is None:
+    def initialize(self):
+        self.fractal_panel.center_pos.param_x = self.model.center_pos[0]
+        self.fractal_panel.center_pos.param_y = self.model.center_pos[1]
+        self.fractal_panel.constant.param_x = self.model.constant[0]
+        self.fractal_panel.constant.param_y = self.model.constant[1]
+        self.fractal_panel.image_size.param = self.model.size
+        self.fractal_panel.steps.param = self.model.steps
+        self.fractal_panel.zoom_rate.param = self.model.zoom
+        self.fractal_panel.mag_rate.param = self.model.mag_rate
+
+        self.color_panel.hue.easing = self.model.hue['easing']
+        self.color_panel.hue.begin = self.model.hue['range'][0]
+        self.color_panel.hue.end = self.model.hue['range'][1]
+        self.color_panel.saturation.easing = self.model.saturation['easing']
+        self.color_panel.saturation.begin = self.model.saturation['range'][0]
+        self.color_panel.saturation.end = self.model.saturation['range'][1]
+        self.color_panel.brightness.easing = self.model.brightness['easing']
+        self.color_panel.brightness.begin = self.model.brightness['range'][0]
+        self.color_panel.brightness.end = self.model.brightness['range'][1]
+        self.disabled_calc = False
+
+    def update_color(self):
+        if self.disabled_calc:
             return
-        elif self.color_panel.palette is None:
+        self.model.set_hue(
+            self.color_panel.hue.easing,
+            self.color_panel.hue.begin,
+            self.color_panel.hue.end
+        )
+        self.model.set_saturation(
+            self.color_panel.saturation.easing,
+            self.color_panel.saturation.begin,
+            self.color_panel.saturation.end
+        )
+        self.model.set_brightness(
+            self.color_panel.brightness.easing,
+            self.color_panel.brightness.begin,
+            self.color_panel.brightness.end
+        )
+        self.model.create_palette()
+        self.view_panel.set_image(self.model.to_image())
+        self.color_panel.set_palette(self.model.to_palette_image())
+
+    def set_center(self, x, y):
+        x, y = self.model.get_center_from_normalized(x, y)
+        self.fractal_panel.center_pos.param_x = x
+        self.fractal_panel.center_pos.param_y = y
+
+    def calculate(self):
+        if self.disabled_calc:
             return
-        image = fractal.create_image(
-            self.control_panel.data,
-            self.color_panel.palette)
-        self.view_panel.set_image(image)
+        start = time.time()
+        self.model.set_fractal_type(self.fractal_panel.fractal_type)
+        x = self.fractal_panel.center_pos.param_x
+        y = self.fractal_panel.center_pos.param_y
+        self.model.set_center_pos(x, y)
+        x = self.fractal_panel.constant.param_x
+        y = self.fractal_panel.constant.param_y
+        self.model.set_constant(x, y)
+        self.model.set_size(self.fractal_panel.image_size.param)
+        self.model.set_steps(self.fractal_panel.steps.param)
+        self.model.set_zoom(self.fractal_panel.zoom_rate.param)
+        self.model.create_data()
+        elapsed_time = time.time() - start
+        self.view_panel.set_image(self.model.to_image())
+        self.fractal_panel.set_processing_time(elapsed_time)
+        self.fractal_panel.set_mag_rate(self.model.mag_rate)
 
     def save(self):
-        if self.control_panel.data is None:
-            return
-        elif self.color_panel.palette is None:
-            return
-        image = fractal.create_image(
-            self.control_panel.data,
-            self.color_panel.palette)
-        fractal_type = self.control_panel.fractal_type
+        fractal_type = self.model.fractal_type
         filename = '{}.png'.format(fractal_type)
         index = 1
         while os.path.isfile(filename):
@@ -164,7 +148,8 @@ class FractalViewer(BoxLayout):
             filename[0] = '{}({})'.format(fractal_type, index)
             filename = '.'.join(filename)
             index += 1
-        image.save(filename, 'PNG')
+        image = self.model.to_image()
+        image.save(filename)
 
 
 class FractalViewerApp(App):
@@ -179,5 +164,6 @@ if __name__ == '__main__':
     import kivy.resources
     Config.set('graphics', 'width', 1080)
     Config.set('graphics', 'height', 720)
+    Config.set('input', 'mouse', 'mouse,disable_multitouch')
     kivy.resources.resource_add_path(resourcePath())
     FractalViewerApp().run()
