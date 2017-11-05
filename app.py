@@ -69,12 +69,35 @@ class ColorPanel(BoxLayout):
         self.palette_image.texture.blit_buffer(image.tobytes())
         self.palette_image.texture.flip_vertical()
 
+    def set_hue(self, hue):
+        self.hue.easing = hue['easing']
+        self.hue.begin = hue['range'][0]
+        self.hue.end = hue['range'][1]
+
+    def set_saturation(self, saturation):
+        self.saturation.easing = saturation['easing']
+        self.saturation.begin = saturation['range'][0]
+        self.saturation.end = saturation['range'][1]
+
+    def set_brightness(self, brightness):
+        self.brightness.easing = brightness['easing']
+        self.brightness.begin = brightness['range'][0]
+        self.brightness.end = brightness['range'][1]
+
 
 class FractalPanel(BoxLayout):
     ctrl = ObjectProperty()
 
     def set_processing_time(self, t):
         self.processing_time.param = t
+
+    def set_param(self, model):
+        self.fractal_type = model.fractal_type
+        self.center_pos.param = model.center_pos
+        self.constant.param = model.constant
+        self.image_size.param = model.size
+        self.steps.param = model.steps
+        self.zoom.param = model.zoom
 
 
 class FractalViewer(BoxLayout):
@@ -95,22 +118,10 @@ class FractalViewer(BoxLayout):
         self.calculate()
 
     def initialize(self):
-        self.fractal_panel.fractal_type = self.model.fractal_type
-        self.fractal_panel.center_pos.param = self.model.center_pos
-        self.fractal_panel.constant.param = self.model.constant
-        self.fractal_panel.image_size.param = self.model.size
-        self.fractal_panel.steps.param = self.model.steps
-        self.fractal_panel.zoom.param = self.model.zoom
-
-        self.color_panel.hue.easing = self.model.hue['easing']
-        self.color_panel.hue.begin = self.model.hue['range'][0]
-        self.color_panel.hue.end = self.model.hue['range'][1]
-        self.color_panel.saturation.easing = self.model.saturation['easing']
-        self.color_panel.saturation.begin = self.model.saturation['range'][0]
-        self.color_panel.saturation.end = self.model.saturation['range'][1]
-        self.color_panel.brightness.easing = self.model.brightness['easing']
-        self.color_panel.brightness.begin = self.model.brightness['range'][0]
-        self.color_panel.brightness.end = self.model.brightness['range'][1]
+        self.fractal_panel.set_param(self.model)
+        self.color_panel.set_hue(self.model.hue)
+        self.color_panel.set_saturation(self.model.saturation)
+        self.color_panel.set_brightness(self.model.brightness)
         self.calc_ready = True
 
     def update_color(self):
@@ -156,16 +167,13 @@ class FractalViewer(BoxLayout):
         self.fractal_panel.set_processing_time(elapsed_time)
 
     def save(self):
-        fractal_type = self.model.fractal_type
-        filename = '{}.png'.format(fractal_type)
+        filename = self.model.fractal_type
         index = 1
-        while os.path.isfile(filename):
-            filename = filename.split('.')
-            filename[0] = '{}({})'.format(fractal_type, index)
-            filename = '.'.join(filename)
+        while os.path.isfile('{}.png'.format(filename)):
+            filename = '{}({})'.format(self.model.fractal_type, index)
             index += 1
         image = self.model.to_image()
-        image.save(filename)
+        image.save('{}.png'.format(filename))
 
 
 class FractalViewerApp(App):

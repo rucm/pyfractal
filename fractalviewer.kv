@@ -155,7 +155,7 @@
             halign: 'left'
             text: 'Fractal Type'
         Spinner:
-            size_hint_y: 1.5
+            size_hint_y: 1.0
             text: root.fractal_type
             values: ['julia', 'mandelbrot']
             on_text: root.fractal_type = self.text
@@ -217,7 +217,7 @@
             size_hint_x: 4.0
             padding_y: (self.height - self.font_size) / 2
             multiline: False
-            text: '{:9.3e}'.format(root.param[0])
+            text: '{}'.format(root.param[0])
             on_text_validate: root.param[0] = float(self.text)
         Label:
             size_hint_x: 1.0
@@ -227,7 +227,7 @@
             size_hint_x: 4.0
             padding_y: (self.height - self.font_size) / 2
             multiline: False
-            text: '{:9.3e}'.format(root.param[1])
+            text: '{}'.format(root.param[1])
             on_text_validate: root.param[1] = float(self.text)
 
 <IntegerParameter@BoxLayout>:
@@ -263,7 +263,7 @@
     TextInput:
         size_hint_y: 1.5
         padding_y: (self.height - self.font_size) / 2
-        text: '{:0}'.format(root.param)
+        text: '{}'.format(root.param)
         on_text_validate: root.param = float(self.text)
         input_filter: 'float'
         multiline: False
