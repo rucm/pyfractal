@@ -69,6 +69,9 @@ class ColorPanel(BoxLayout):
         self.palette_image.texture.blit_buffer(image.tobytes())
         self.palette_image.texture.flip_vertical()
 
+    def set_param(self, model):
+        pass
+
     def set_hue(self, hue):
         self.hue.easing = hue['easing']
         self.hue.begin = hue['range'][0]
@@ -119,29 +122,33 @@ class FractalViewer(BoxLayout):
 
     def initialize(self):
         self.fractal_panel.set_param(self.model)
-        self.color_panel.set_hue(self.model.hue)
-        self.color_panel.set_saturation(self.model.saturation)
-        self.color_panel.set_brightness(self.model.brightness)
+        # self.color_panel.set_hue(self.model.hue)
+        # self.color_panel.set_saturation(self.model.saturation)
+        # self.color_panel.set_brightness(self.model.brightness)
         self.calc_ready = True
 
     def update_color(self):
         if not self.calc_ready:
             return
-        self.model.set_hue(
-            self.color_panel.hue.easing,
-            self.color_panel.hue.begin,
-            self.color_panel.hue.end
-        )
-        self.model.set_saturation(
-            self.color_panel.saturation.easing,
-            self.color_panel.saturation.begin,
-            self.color_panel.saturation.end
-        )
-        self.model.set_brightness(
-            self.color_panel.brightness.easing,
-            self.color_panel.brightness.begin,
-            self.color_panel.brightness.end
-        )
+        self.model.hue = self.color_panel.hue
+        self.model.saturation = self.color_panel.saturation
+        self.model.brightness = self.color_panel.brightness
+        print('test')
+        # self.model.set_hue(
+        #     self.color_panel.hue.easing,
+        #     self.color_panel.hue.begin,
+        #     self.color_panel.hue.end
+        # )
+        # self.model.set_saturation(
+        #     self.color_panel.saturation.easing,
+        #     self.color_panel.saturation.begin,
+        #     self.color_panel.saturation.end
+        # )
+        # self.model.set_brightness(
+        #     self.color_panel.brightness.easing,
+        #     self.color_panel.brightness.begin,
+        #     self.color_panel.brightness.end
+        # )
         self.model.create_palette()
         self.view_panel.set_image(self.model.to_image())
         self.color_panel.set_palette(self.model.to_palette_image())

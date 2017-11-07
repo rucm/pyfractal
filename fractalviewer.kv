@@ -38,9 +38,9 @@
     orientation: 'vertical'
     padding: 10
     spacing: 10
-    hue: _hue
-    saturation: _saturation
-    brightness: _brightness
+    hue: root.parent.model.hue
+    saturation: root.parent.model.saturation
+    brightness: root.parent.model.brightness
     palette_image: _palette_image
     canvas.before:
         Color:
@@ -50,16 +50,25 @@
             pos: self.pos
     ColorContent:
         size_hint_y: 5.0
-        id: _hue
         title: 'Hue'
+        param: root.hue
+        on_param:
+            root.parent.model.hue = self.param
+            root.ctrl.update_color()
     ColorContent:
         size_hint_y: 5.0
-        id: _saturation
         title: 'Saturation'
+        param: root.saturation
+        on_param:
+            root.saturation = self.param
+            root.ctrl.update_color()
     ColorContent:
         size_hint_y: 5.0
-        id: _brightness
         title: 'Brightness'
+        param: root.brightness
+        on_param:
+            root.brightness = self.param
+            root.ctrl.update_color()
     BoxLayout:
         orientation: 'vertical'
         size_hint_y: 1.5
@@ -79,9 +88,7 @@
     orientation: 'vertical'
     spacing: 10
     title: ''
-    easing: ''
-    begin: 0.0
-    end: 0.0
+    param: {'easing': '', 'range': [0.0, 0.0]}
     Label:
         size_hint_y: 1.0
         font_size: root.width * 0.1
@@ -98,11 +105,9 @@
             text: 'easing'
         Spinner:
             size_hint_x: 2.0
-            text: root.easing
+            text: root.param['easing']
             values: fractal.Easing.MethodList()
-            on_text:
-                root.easing = self.text
-                root.parent.ctrl.update_color()
+            on_text: root.param['easing'] = self.text
         Label:
             size_hint_y: 1.5
             font_size: root.width * 0.1
@@ -110,10 +115,11 @@
         Slider:
             min: 0.0
             max: 1.0
-            value: root.begin
+            value: root.param['range'][0]
             on_value:
-                root.begin = self.value
-                root.parent.ctrl.update_color()
+                _range = root.param['range']
+                _range[0] = self.value
+                root.param['range'] = _range
         Label:
             size_hint_y: 1.5
             font_size: root.width * 0.1
@@ -121,11 +127,12 @@
         Slider:
             min: 0.0
             max: 1.0
-            value: root.end
+            value: root.param['range'][1]
             on_value:
-                root.end = self.value
-                root.parent.ctrl.update_color()
-            disabled: root.easing == 'Fixed'
+                _range = root.param['range']
+                _range[1] = self.value
+                root.param['range'] = _range
+            disabled: root.param['easing'] == 'Fixed'
 
 <FractalPanel>:
     orientation: 'vertical'
