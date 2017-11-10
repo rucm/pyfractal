@@ -1,0 +1,296 @@
+#:import fractal fractal
+
+<FractalViewer>:
+    orientation: 'horizontal'
+    fractal_panel: _fractal_panel
+    view_panel: _view_panel
+    color_panel: _color_panel
+    FractalPanel:
+        id: _fractal_panel
+        size_hint_x: 1.0
+    ViewPanel:
+        id: _view_panel
+        size_hint_x: 4.0
+    ColorPanel:
+        id: _color_panel
+        size_hint_x: 1.0
+
+<ViewPanel>:
+    scene: _scene
+    canvas.before:
+        Color:
+            rgba: [0.3, 0.3, 0.3, 1]
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    Image:
+        id: _scene
+        size_hint: 1.0, 1.0
+        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+        allow_stretch: True
+        offset_x: (self.size[0] - self.norm_image_size[0]) / 2 + self.pos[0]
+        offset_y: (self.size[1] - self.norm_image_size[1]) / 2 + self.pos[1]
+        on_touch_down: root.touch_down(args[1])
+        on_touch_move: root.touch_move(args[1])
+        on_touch_up: root.touch_up(args[1])
+
+<ColorPanel>:
+    orientation: 'vertical'
+    padding: 10
+    spacing: 10
+    hue: root.parent.model.hue
+    saturation: root.parent.model.saturation
+    brightness: root.parent.model.brightness
+    palette_image: _palette_image
+    canvas.before:
+        Color:
+            rgba: [0.2, 0.2, 0.2, 1]
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    ColorContent:
+        size_hint_y: 5.0
+        title: 'Hue'
+        param: root.hue
+        on_param:
+            root.parent.model.hue = self.param
+            root.ctrl.update_color()
+    ColorContent:
+        size_hint_y: 5.0
+        title: 'Saturation'
+        param: root.saturation
+        on_param:
+            root.saturation = self.param
+            root.ctrl.update_color()
+    ColorContent:
+        size_hint_y: 5.0
+        title: 'Brightness'
+        param: root.brightness
+        on_param:
+            root.brightness = self.param
+            root.ctrl.update_color()
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint_y: 1.5
+        spacing: 10
+        Label:
+            font_size: root.width * 0.1
+            text_size: self.size
+            halign: 'left'
+            text: 'Color Palette'
+        Image:
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            id: _palette_image
+            allow_stretch: True
+            keep_ratio: False
+
+<ColorContent@BoxLayout>:
+    orientation: 'vertical'
+    spacing: 10
+    title: ''
+    param: {'easing': '', 'range': [0.0, 0.0]}
+    Label:
+        size_hint_y: 1.0
+        font_size: root.width * 0.1
+        text_size: self.size
+        halign: 'left'
+        text: root.title
+    GridLayout:
+        size_hint_y: 3.0
+        cols: 2
+        Label:
+            size_hint_x: 1.0
+            size_hint_y: 1.0
+            font_size: root.width * 0.1
+            text: 'easing'
+        Spinner:
+            size_hint_x: 2.0
+            text: root.param['easing']
+            values: fractal.Easing.MethodList()
+            on_text: root.param['easing'] = self.text
+        Label:
+            size_hint_y: 1.5
+            font_size: root.width * 0.1
+            text: 'begin'
+        Slider:
+            min: 0.0
+            max: 1.0
+            value: root.param['range'][0]
+            on_value:
+                _range = root.param['range']
+                _range[0] = self.value
+                root.param['range'] = _range
+        Label:
+            size_hint_y: 1.5
+            font_size: root.width * 0.1
+            text: 'end'
+        Slider:
+            min: 0.0
+            max: 1.0
+            value: root.param['range'][1]
+            on_value:
+                _range = root.param['range']
+                _range[1] = self.value
+                root.param['range'] = _range
+            disabled: root.param['easing'] == 'Fixed'
+
+<FractalPanel>:
+    orientation: 'vertical'
+    padding: 10
+    spacing: 10
+    fractal_type: ''
+    center_pos: _center_pos
+    constant: _constant
+    image_size: _image_size
+    steps: _steps
+    zoom: _zoom
+    processing_time: _processing_time
+    canvas.before:
+        Color:
+            rgba: [0.2, 0.2, 0.2, 1]
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint_y: 1.0
+        spacing: 5
+        Label:
+            size_hint_y: 1.0
+            font_size: root.width * 0.1
+            text_size: self.size
+            halign: 'left'
+            text: 'Fractal Type'
+        Spinner:
+            size_hint_y: 1.0
+            text: root.fractal_type
+            values: ['julia', 'mandelbrot']
+            on_text: root.fractal_type = self.text
+    Coordinate:
+        id: _center_pos
+        size_hint_y: 2.0
+        title: 'Center Position'
+    Coordinate:
+        id: _constant
+        size_hint_y: 2.0
+        title: 'Constant'
+        disabled: root.fractal_type != 'julia'
+    IntegerParameter:
+        id: _image_size
+        size_hint_y: 1.0
+        title: 'Image Size'
+    IntegerParameter:
+        id: _steps
+        size_hint_y: 1.0
+        title: 'Steps'
+    FloatParameter:
+        id: _zoom
+        size_hint_y: 1.0
+        title: 'Zoom'
+    ProcessingTime:
+        id: _processing_time
+        size_hint_y: 1.0
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint_y: 2.0
+        spacing: 10
+        Button:
+            text: 'Calculate'
+            on_release: root.ctrl.calculate()
+        Button:
+            text: 'Save'
+            on_release: root.ctrl.save()
+
+<Coordinate@BoxLayout>:
+    orientation: 'vertical'
+    spacing: 5
+    title: 'title'
+    param: [0.0, 0.0]
+    Label:
+        size_hint_y: 1.0
+        font_size: root.width * 0.1
+        text_size: self.size
+        halign: 'left'
+        text: root.title
+    GridLayout:
+        size_hint_y: 2.0
+        cols: 2
+        spacing: 10
+        Label:
+            size_hint_x: 1.0
+            font_size: root.width * 0.1
+            text: 'x'
+        TextInput:
+            size_hint_x: 4.0
+            padding_y: (self.height - self.font_size) / 2
+            multiline: False
+            text: '{}'.format(root.param[0])
+            on_text_validate: root.param[0] = float(self.text)
+        Label:
+            size_hint_x: 1.0
+            font_size: root.width * 0.1
+            text: 'y'
+        TextInput:
+            size_hint_x: 4.0
+            padding_y: (self.height - self.font_size) / 2
+            multiline: False
+            text: '{}'.format(root.param[1])
+            on_text_validate: root.param[1] = float(self.text)
+
+<IntegerParameter@BoxLayout>:
+    title: 'title'
+    param: 0
+    orientation: 'vertical'
+    spacing: 5
+    Label:
+        size_hint_y: 1.0
+        font_size: root.width * 0.1
+        text_size: self.size
+        halign: 'left'
+        text: root.title
+    TextInput:
+        size_hint_y: 1.5
+        padding_y: (self.height - self.font_size) / 2
+        text: '{:0}'.format(root.param)
+        on_text_validate: root.param = int(self.text)
+        input_filter: 'int'
+        multiline: False
+
+<FloatParameter@BoxLayout>:
+    title: 'title'
+    param: 0
+    orientation: 'vertical'
+    spacing: 5
+    Label:
+        size_hint_y: 1.0
+        font_size: root.width * 0.1
+        text_size: self.size
+        halign: 'left'
+        text: root.title
+    TextInput:
+        size_hint_y: 1.5
+        padding_y: (self.height - self.font_size) / 2
+        text: '{}'.format(root.param)
+        on_text_validate: root.param = float(self.text)
+        input_filter: 'float'
+        multiline: False
+
+<ProcessingTime@BoxLayout>:
+    title: 'Processing Time'
+    param: 0.0
+    orientation: 'vertical'
+    spacing: 5
+    Label:
+        size_hint_y: 1.0
+        font_size: root.width * 0.1
+        text_size: self.size
+        halign: 'left'
+        text: root.title
+    TextInput:
+        size_hint_y: 1.5
+        padding_y: (self.height - self.font_size) / 2
+        text: '{:.5f}'.format(root.param)
+        on_text: root.param = float(self.text)
+        multiline: False
+        readonly: True
+        is_focusable: False
