@@ -14,7 +14,7 @@ numba==0.35.0
 numpy==1.13.3
 olefile==0.44
 pefile==2017.9.3
-Pillow==4.3.0
+Pillow==9.0.0
 Pygments==2.2.0
 PyInstaller==3.3
 pypiwin32==220
