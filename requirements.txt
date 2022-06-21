@@ -11,7 +11,7 @@ kivy.deps.sdl2==0.1.17
 llvmlite==0.20.0
 macholib==1.8
 numba==0.35.0
-numpy==1.13.3
+numpy==1.22.0
 olefile==0.44
 pefile==2017.9.3
 Pillow==4.3.0
